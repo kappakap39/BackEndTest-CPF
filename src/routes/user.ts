@@ -10,6 +10,7 @@ root.get('/getUserByID/:UserIDInput', getUserByID);
 root.get('/searchUserByEmail/:EmailInput', searchUserByEmail);
 root.get('/searchUserByFullname/:FullnameInput', searchUserByFullname);
 root.get('/searchUserByEF/:EmailInput/:FullnameInput', searchUserByEF);
-root.get('/searchUserByEorF/:EmailInput/:FullnameInput', searchUserByEorF);
+root.get('/searchUserByEorF/:UserEmail/:FullnameInput', searchUserByEorF);
+
 
 export default root;

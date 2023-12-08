@@ -12,89 +12,100 @@ datasource db {
 }
 
 model People {
-  PeopleID        String            @id @default(uuid()) @db.Uuid
-  Username        String            @unique @db.VarChar(255)
-  Email           String            @unique @db.VarChar(255)
-  FirstName       String            @db.VarChar(255)
-  LastName        String            @db.VarChar(255)
-  Tel             String            @db.VarChar(20)
-  CreatedAt       DateTime          @default(now())
-  UpdatedAt       DateTime          @updatedAt
-}         
+  PeopleID  String   @id @default(uuid()) @db.Uuid
+  Username  String   @unique @db.VarChar(255)
+  Email     String   @unique @db.VarChar(255)
+  FirstName String   @db.VarChar(255)
+  LastName  String   @db.VarChar(255)
+  Tel       String   @db.VarChar(20)
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+}
 
-model User {          
-
-  UserID          String            @id @default(uuid()) @db.Uuid
-  Email           String            @db.VarChar(255) @unique
-  Password        String            @db.VarChar(255)
-  FirstName       String            @db.VarChar(255)
-  LastName        String            @db.VarChar(255)
-  FullName        String            @db.VarChar(255)
-  Address         Json?             @db.Json()
-  Tel             String            @db.VarChar(10)
-  Status          Boolean           @default(true)
-  Remove          Boolean           @default(false)
-  Active          Boolean           @default(false)
-  CreatedAt       DateTime          @default(now())
-  UpdatedAt       DateTime          @updatedAt
+model User {
+  UserID    String   @id @default(uuid()) @db.Uuid
+  Email     String   @unique @db.VarChar(255)
+  Password  String   @db.VarChar(255)
+  FirstName String   @db.VarChar(255)
+  LastName  String   @db.VarChar(255)
+  FullName  String   @db.VarChar(255)
+  Address   Json?    @db.Json()
+  Tel       String   @db.VarChar(10)
+  Status    Boolean  @default(true)
+  Remove    Boolean  @default(false)
+  Active    Boolean  @default(false)
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
 
   // เพิ่มความสัมพันธ์กับ Product
-  order        Order[] @relation("OrderToUser")
+  order Order[] @relation("OrderToUser")
 
+  token Token[] @relation(name: "Tokens")
 }
 
 model ProductCategory {
-  CategoryID      String            @id @default(uuid()) @db.Uuid
-  CategoryName    String            @db.VarChar(255)
-  Description     String?           @db.VarChar(511)
-  CreatedAt       DateTime          @default(now())
-  UpdatedAt       DateTime          @updatedAt
+  CategoryID   String   @id @default(uuid()) @db.Uuid
+  CategoryName String   @db.VarChar(255)
+  Description  String?  @db.VarChar(511)
+  CreatedAt    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
 
   // เพิ่มความสัมพันธ์กับ Product
-  products        Product[] @relation("ProductCategoryToProduct")
+  products Product[] @relation("ProductCategoryToProduct")
 }
 
 model Product {
-  ProductID       String            @id @default(uuid()) @db.Uuid
-  CateGoryID      String            @db.Uuid
-  ProductName     String            @db.VarChar(255)
-  Description     String?           @db.VarChar(511)
-  Price           Float
-  Stock           Int
-  Status          Boolean           @default(true)
-  CreatedAt       DateTime          @default(now())
-  UpdatedAt       DateTime          @updatedAt
+  ProductID   String   @id @default(uuid()) @db.Uuid
+  CateGoryID  String   @db.Uuid
+  ProductName String   @db.VarChar(255)
+  Description String?  @db.VarChar(511)
+  Price       Float
+  Stock       Int
+  Status      Boolean  @default(true)
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
 
   // เพิ่มความสัมพันธ์กับ ProductCategory
-  category        ProductCategory   @relation("ProductCategoryToProduct", fields: [CateGoryID], references: [CategoryID])
+  category ProductCategory @relation("ProductCategoryToProduct", fields: [CateGoryID], references: [CategoryID])
   // เพิ่มความสัมพันธ์กับ Product
-  product         OrderDetial[]           @relation("ProductToOrderDetail")
+  product  OrderDetial[]   @relation("ProductToOrderDetail")
 }
 
 model Order {
-  OrderID         String            @id @default(uuid()) @db.Uuid
-  UserID          String            @db.Uuid
-  DeliveryStatus  Boolean           @default(false)
-  CreatedAt       DateTime          @default(now())
-  UpdatedAt       DateTime          @updatedAt
+  OrderID        String   @id @default(uuid()) @db.Uuid
+  UserID         String   @db.Uuid
+  DeliveryStatus Boolean  @default(false)
+  CreatedAt      DateTime @default(now())
+  UpdatedAt      DateTime @updatedAt
 
   // เพิ่มความสัมพันธ์กับ User
-  user            User              @relation("OrderToUser", fields: [UserID], references: [UserID])
+  user         User          @relation("OrderToUser", fields: [UserID], references: [UserID])
   // เพิ่มความสัมพันธ์กับ OrderDetail
-  orderDetails    OrderDetial[]     @relation("OrderToOrderDetail")
+  orderDetails OrderDetial[] @relation("OrderToOrderDetail")
 }
 
 model OrderDetial {
-  OrderDetailID   String            @id @default(uuid()) @db.Uuid
-  OrderID         String            @db.Uuid
-  ProductID       String            @db.Uuid
-  Amount          Int
-  Price           Float
-  CreatedAt       DateTime          @default(now())
-  UpdatedAt       DateTime          @updatedAt
+  OrderDetailID String   @id @default(uuid()) @db.Uuid
+  OrderID       String   @db.Uuid
+  ProductID     String   @db.Uuid
+  Amount        Int
+  Price         Float
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
 
   // เพิ่มความสัมพันธ์กับ Order
-  order           Order             @relation("OrderToOrderDetail", fields: [OrderID], references: [OrderID])
+  order   Order   @relation("OrderToOrderDetail", fields: [OrderID], references: [OrderID])
   // เพิ่มความสัมพันธ์กับ Product
-  product         Product           @relation("ProductToOrderDetail", fields: [ProductID], references: [ProductID])
+  product Product @relation("ProductToOrderDetail", fields: [ProductID], references: [ProductID])
+}
+
+model Token {
+  TokenID    String   @id @default(uuid()) @db.Uuid
+  CreatedAt  DateTime @default(now())
+  UpdatedAt  DateTime @updatedAt
+  Expiration DateTime
+  UserID     String   @db.Uuid
+
+  user User @relation(name: "Tokens", fields: [UserID], references: [UserID])
+  // user User  @relation(name: "Token", fields: [UserID], references: [UserID], onDelete: Cascade)
 }

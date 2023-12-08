@@ -12,6 +12,13 @@ import OrderShow from './routes/OrderShow';
 import product from './routes/Product';
 import ProductCategory from './routes/ProductCategory';
 
+import { exampleMiddleware } from './middleware/Test/MiddlewareTest';
+import { PeopleMd } from './middleware/Test/PeopleSS';
+
+import { CheckValidate, CheckInput } from './middleware/UserLogin/Validate'
+import usermiddle from './routes/Middlewere'
+
+
 const app = express();
 
 // Apply most middleware first
@@ -27,14 +34,22 @@ app.use(helmet());
 app.use(morgan('tiny'));
 
 // Apply routes before error handling
-
 app.use('/test', test);
 app.use('/user', user);
 app.use('/order', order);
 app.use('/OrderShow', OrderShow);
 app.use('/product', product);
 app.use('/ProductCategory', ProductCategory);
+app.use('/usermiddle', usermiddle);
 // app.use('/', test);
+
+//!middleware People
+app.use(exampleMiddleware);
+app.use(PeopleMd);
+
+//!middleware User
+app.use(CheckValidate);
+app.use(CheckInput);
 
 // Apply error handling last
 app.use(fourOhFour);
