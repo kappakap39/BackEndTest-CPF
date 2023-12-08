@@ -15,7 +15,7 @@ root.patch('/updateUser', updateUser);
 root.delete('/deleteUser', deleteUser);
 root.get('/getUserByID/:UserID', getUserByID);
 root.get('/getPeopleID/:PeopleID', getPeopleID);
-root.get('/:people', exampleMiddleware, PeopleMd)
+root.get('/:people', exampleMiddleware, PeopleMd);
 
 
 export default root;

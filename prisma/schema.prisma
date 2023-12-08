@@ -105,7 +105,7 @@ model Token {
   UpdatedAt  DateTime @updatedAt
   Expiration DateTime
   UserID     String   @db.Uuid
-
-  user User @relation(name: "Tokens", fields: [UserID], references: [UserID])
+  TokenValue String
+  user       User     @relation(name: "Tokens", fields: [UserID], references: [UserID])
   // user User  @relation(name: "Token", fields: [UserID], references: [UserID], onDelete: Cascade)
 }

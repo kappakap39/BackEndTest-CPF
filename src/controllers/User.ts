@@ -125,6 +125,7 @@ const getUserAll: RequestHandler = async (req, res) => {
         const usersWithFullnameFL = users.map((user) => ({
             ...user,
             FullnameFL: `${user.FirstName} ${user.LastName}`,
+            // PasswordHASH: password,
         }));
 
         return res.json(usersWithFullnameFL);
@@ -194,9 +195,12 @@ const addUserAll: RequestHandler = async (req, res) => {
             });
         }
 
+        // ใช้ Bcrypt เพื่อแฮชรหัสผ่าน
+        const hashedPassword = await bcrypt.hash(validatedData.Password, 10);
+
         const payloadUser = {
             Email: validatedData.Email,
-            Password: validatedData.Password,
+            Password: hashedPassword,
             FirstName: validatedData.FirstName,
             LastName: validatedData.LastName,
             FullName: validatedData.FullName,
@@ -450,10 +454,7 @@ const searchUserByEorF: RequestHandler = async (req, res) => {
 
         const userByEF = await prisma.user.findMany({
             where: {
-                OR: [
-                    { Email: EmailInput },
-                    { FullName: FullnameInput },
-                ],
+                OR: [{ Email: EmailInput }, { FullName: FullnameInput }],
             },
         });
 
@@ -470,6 +471,14 @@ const searchUserByEorF: RequestHandler = async (req, res) => {
     }
 };
 
-
-
-export { getUserAll, addUserAll, updateUserAll, deleteUserAll, getUserByID, searchUserByEmail, searchUserByFullname, searchUserByEF, searchUserByEorF };
+export {
+    getUserAll,
+    addUserAll,
+    updateUserAll,
+    deleteUserAll,
+    getUserByID,
+    searchUserByEmail,
+    searchUserByFullname,
+    searchUserByEF,
+    searchUserByEorF,
+};

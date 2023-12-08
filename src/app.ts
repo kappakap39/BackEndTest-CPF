@@ -43,13 +43,6 @@ app.use('/ProductCategory', ProductCategory);
 app.use('/UserMD', UserMD);
 // app.use('/', test);
 
-//!middleware People
-app.use(exampleMiddleware);
-app.use(PeopleMd);
-
-//!middleware User
-app.use(CheckValidate);
-app.use(CheckInput);
 
 // Apply error handling last
 app.use(fourOhFour);
