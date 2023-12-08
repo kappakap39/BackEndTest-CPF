@@ -11,12 +11,7 @@ import order from './routes/Order';
 import OrderShow from './routes/OrderShow';
 import product from './routes/Product';
 import ProductCategory from './routes/ProductCategory';
-
-import { exampleMiddleware } from './middleware/Test/MiddlewareTest';
-import { PeopleMd } from './middleware/Test/PeopleSS';
-
-import { CheckValidate, CheckInput } from './middleware/UserLogin/Validate'
-import UserMD from './routes/Middlewere';
+import UserMD from './routes/CheckLogin';
 
 
 const app = express();

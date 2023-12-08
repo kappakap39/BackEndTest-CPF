@@ -81,6 +81,18 @@ CREATE TABLE "OrderDetial" (
     CONSTRAINT "OrderDetial_pkey" PRIMARY KEY ("OrderDetailID")
 );
 
+-- CreateTable
+CREATE TABLE "Token" (
+    "TokenID" UUID NOT NULL,
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+    "Expiration" TIMESTAMP(3) NOT NULL,
+    "UserID" UUID NOT NULL,
+    "TokenValue" TEXT NOT NULL,
+
+    CONSTRAINT "Token_pkey" PRIMARY KEY ("TokenID")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "People_Username_key" ON "People"("Username");
 
@@ -101,3 +113,6 @@ ALTER TABLE "OrderDetial" ADD CONSTRAINT "OrderDetial_OrderID_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "OrderDetial" ADD CONSTRAINT "OrderDetial_ProductID_fkey" FOREIGN KEY ("ProductID") REFERENCES "Product"("ProductID") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Token" ADD CONSTRAINT "Token_UserID_fkey" FOREIGN KEY ("UserID") REFERENCES "User"("UserID") ON DELETE RESTRICT ON UPDATE CASCADE;
