@@ -16,7 +16,7 @@ import { exampleMiddleware } from './middleware/Test/MiddlewareTest';
 import { PeopleMd } from './middleware/Test/PeopleSS';
 
 import { CheckValidate, CheckInput } from './middleware/UserLogin/Validate'
-import usermiddle from './routes/Middlewere'
+import UserMD from './routes/Middlewere';
 
 
 const app = express();
@@ -40,7 +40,7 @@ app.use('/order', order);
 app.use('/OrderShow', OrderShow);
 app.use('/product', product);
 app.use('/ProductCategory', ProductCategory);
-app.use('/usermiddle', usermiddle);
+app.use('/UserMD', UserMD);
 // app.use('/', test);
 
 //!middleware People

@@ -10,7 +10,6 @@ const PeopleMd = async (req: Request, res: Response, next: NextFunction) => {
 
         // หาคนที่ตรงกับ ID ที่ระบุ
         const foundPerson = peopleData.find(person => person.PeopleID === people);
-
         if (foundPerson) {
             console.log('ID People successfully');
             res.status(200).json({ People: 'successfully', foundPerson });
