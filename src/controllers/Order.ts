@@ -192,7 +192,8 @@ const OrderBydate: RequestHandler = async (req, res) => {
                 CreatedAt: true,
                 user: {
                     select: {
-                        FullName: true,
+                        FirstName: true,
+                        LastName: true,
                     },
                 },
                 orderDetails: {

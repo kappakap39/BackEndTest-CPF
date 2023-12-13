@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 import { RequestHandler } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { CustomHelpers } from 'joi';
+import nodemailer from 'nodemailer';
 
 //!Get User All
 // const getUserAll: RequestHandler = async (req, res) => {
@@ -30,7 +31,6 @@ import { CustomHelpers } from 'joi';
 //         Password:   Joi.string().min(1).max(255).required(),
 //         FirstName:  Joi.string().min(1).max(255).required(),
 //         LastName:   Joi.string().min(1).max(255).required(),
-//         FullName:   Joi.string().min(1).max(255).required(), //!แก้ทำแบบให้ FirstName มารวมกับ LastName
 //         Address: Joi.object([{
 //             province: Joi.string().max(255).required(),
 //             district: Joi.string().max(255).required(),
@@ -95,8 +95,6 @@ import { CustomHelpers } from 'joi';
 //             Password:   body.Password,
 //             FirstName:  body.FirstName,
 //             LastName:   body.LastName,
-//             // FullName:   body.FirstName + body.LastName,
-//             FullName:   body.FullName,
 //             Address:    body.Address,
 //             Tel:        body.Tel,
 //             Status:     body.Status,
@@ -144,7 +142,8 @@ const addUserAll: RequestHandler = async (req, res) => {
         Password: Joi.string().min(1).max(255).required(),
         FirstName: Joi.string().min(1).max(255).required(),
         LastName: Joi.string().min(1).max(255).required(),
-        FullName: Joi.string().min(1).max(255).required(), //!แก้ทำแบบให้ FirstName มารวมกับ LastName
+        Otp: Joi.string().min(1).max(255),
+        OtpExpired: Joi.date(),
         Address: Joi.object({
             province: Joi.string().max(255).required(),
             district: Joi.string().max(255).required(),
@@ -203,13 +202,16 @@ const addUserAll: RequestHandler = async (req, res) => {
             Password: hashedPassword,
             FirstName: validatedData.FirstName,
             LastName: validatedData.LastName,
-            FullName: validatedData.FullName,
+            Otp: validatedData.Otp,
+            OtpExpired: validatedData.OtpExpired,
+            // FullName: `${validatedData.FirstName} ${validatedData.LastName}`, // Assuming 'FullName' is a combination of first and last name
             Address: validatedData.Address,
             Tel: validatedData.Tel,
             Status: validatedData.Status,
             Remove: validatedData.Remove,
             Active: validatedData.Active,
         };
+        
 
         const user = await prisma.user.create({
             data: payloadUser,
@@ -278,9 +280,12 @@ const updateUserAll: RequestHandler = async (req, res) => {
         if (body.LastName) {
             payload['LastName'] = body.LastName;
         }
+        if (body.Otp) {
+            payload['Otp'] = body.Otp;
+        }
 
-        if (body.FullName) {
-            payload['FullName'] = body.FullName;
+        if (body.OtpExpired) {
+            payload['OtpExpired'] = body.OtpExpired;
         }
 
         if (body.Address) {
@@ -397,22 +402,22 @@ const searchUserByEmail: RequestHandler = async (req, res) => {
     }
 };
 
-//!search user FullName
-const searchUserByFullname: RequestHandler = async (req, res) => {
+// //!search user FirstName
+const searchUserByFirstName: RequestHandler = async (req, res) => {
     const prisma = new PrismaClient();
     try {
-        const { FullnameInput } = req.params;
-        const userByFullname = await prisma.user.findMany({
+        const { FirstNameInput } = req.params;
+        const userByFirstNameInput = await prisma.user.findMany({
             where: {
-                FullName: FullnameInput,
+                FirstName: FirstNameInput,
             },
         });
 
-        if (!userByFullname) {
-            return res.status(404).json({ error: 'Fullname not found' });
+        if (!userByFirstNameInput) {
+            return res.status(404).json({ error: 'FirstName not found' });
         }
 
-        return res.json(userByFullname);
+        return res.json(userByFirstNameInput);
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -421,21 +426,21 @@ const searchUserByFullname: RequestHandler = async (req, res) => {
     }
 };
 
-//!search Email and Fullname
+//!search Email and FirstNameInput
 const searchUserByEF: RequestHandler = async (req, res) => {
     const prisma = new PrismaClient();
     try {
         const { EmailInput } = req.params;
-        const { FullnameInput } = req.params;
+        const { FirstNameInput } = req.params;
         const userByEF = await prisma.user.findMany({
             where: {
                 Email: EmailInput,
-                FullName: FullnameInput,
+                FirstName: FirstNameInput,
             },
         });
 
         if (!userByEF) {
-            return res.status(404).json({ error: 'Email or Fullname not found' });
+            return res.status(404).json({ error: 'Email or FirstName not found' });
         }
 
         return res.json(userByEF);
@@ -450,16 +455,16 @@ const searchUserByEF: RequestHandler = async (req, res) => {
 const searchUserByEorF: RequestHandler = async (req, res) => {
     const prisma = new PrismaClient();
     try {
-        const { EmailInput, FullnameInput } = req.params;
+        const { EmailInput, FirstNameInput } = req.params;
 
         const userByEF = await prisma.user.findMany({
             where: {
-                OR: [{ Email: EmailInput }, { FullName: FullnameInput }],
+                OR: [{ Email: EmailInput }, { FirstName: FirstNameInput }],
             },
         });
 
         if (userByEF.length === 0) {
-            return res.status(404).json({ error: 'Email or Fullname not found' });
+            return res.status(404).json({ error: 'Email or FirstName not found' });
         }
 
         return res.json(userByEF);
@@ -471,6 +476,49 @@ const searchUserByEorF: RequestHandler = async (req, res) => {
     }
 };
 
+// const SentMail: RequestHandler = async (req, res) => {
+//     const prisma = new PrismaClient();
+
+//     try {
+//         const { EmailInput, PasswordInput } = req.body;
+
+//         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//         if (!emailRegex.test(EmailInput)) {
+//             res.status(403).json({ error: 'CheckValidate: Invalid email format' });
+//             return;
+//         }
+//         const userByEmail = await prisma.user.findUnique({
+//             where: {
+//                 Email: EmailInput,
+//             },
+//         });
+
+//         if (userByEmail) {
+//             // ใช้ Bcrypt เพื่อแฮชรหัสผ่าน
+//             const passwordMatch = await bcrypt.compare(PasswordInput, userByEmail.Password);
+//             if (passwordMatch) {
+//                 console.log('User :', userByEmail);
+//                 res.status(200).json({ 
+//                     User: userByEmail,
+                    
+//                 });
+//             } else {
+//                 res.status(403).json({ error: 'Password in correct' });
+//             }
+//         } else {
+//             res.status(403).json({ error: 'None User' });
+//         }
+
+//         return res.json(userByEmail);
+//     } catch (error) {
+//         console.error('Error:', error);
+//         return res.status(500).json({ error: 'Internal Server Error' });
+//     } finally {
+//         await prisma.$disconnect();
+//     }
+// };
+
+
 export {
     getUserAll,
     addUserAll,
@@ -478,7 +526,7 @@ export {
     deleteUserAll,
     getUserByID,
     searchUserByEmail,
-    searchUserByFullname,
+    searchUserByFirstName,
     searchUserByEF,
     searchUserByEorF,
 };

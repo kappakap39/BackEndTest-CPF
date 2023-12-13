@@ -11,7 +11,8 @@ import order from './routes/Order';
 import OrderShow from './routes/OrderShow';
 import product from './routes/Product';
 import ProductCategory from './routes/ProductCategory';
-import UserMD from './routes/CheckLogin';
+import UserMD from './routes/authToken';
+import mail from './routes/mail';
 
 
 const app = express();
@@ -36,6 +37,7 @@ app.use('/OrderShow', OrderShow);
 app.use('/product', product);
 app.use('/ProductCategory', ProductCategory);
 app.use('/UserMD', UserMD);
+app.use('/mail', mail);
 // app.use('/', test);
 
 

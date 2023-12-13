@@ -23,19 +23,20 @@ model People {
 }
 
 model User {
-  UserID    String   @id @default(uuid()) @db.Uuid
-  Email     String   @unique @db.VarChar(255)
-  Password  String   @db.VarChar(255)
-  FirstName String   @db.VarChar(255)
-  LastName  String   @db.VarChar(255)
-  FullName  String   @db.VarChar(255)
-  Address   Json?    @db.Json()
-  Tel       String   @db.VarChar(10)
-  Status    Boolean  @default(true)
-  Remove    Boolean  @default(false)
-  Active    Boolean  @default(false)
-  CreatedAt DateTime @default(now())
-  UpdatedAt DateTime @updatedAt
+  UserID     String   @id @default(uuid()) @db.Uuid
+  Email      String   @unique @db.VarChar(255)
+  Password   String   @db.VarChar(255)
+  FirstName  String   @db.VarChar(255)
+  LastName   String   @db.VarChar(255)
+  Address    Json?    @db.Json()
+  Tel        String   @db.VarChar(10)
+  Otp        String?
+  OtpExpired DateTime?
+  Status     Boolean  @default(true)
+  Remove     Boolean  @default(false)
+  Active     Boolean  @default(false)
+  CreatedAt  DateTime @default(now())
+  UpdatedAt  DateTime @updatedAt
 
   // เพิ่มความสัมพันธ์กับ Product
   order Order[] @relation("OrderToUser")

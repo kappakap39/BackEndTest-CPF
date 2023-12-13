@@ -5,7 +5,8 @@ import { PrismaClient } from '@prisma/client';
 import dayjs from 'dayjs';
 
 //!Get Product
-const getProduct: RequestHandler = async (req, res) => {
+const getProduct: RequestHandler = async (req: any, res) => {
+    const user = req.user;
     const prisma = new PrismaClient();
     try {
         const Product = await prisma.product.findMany();
