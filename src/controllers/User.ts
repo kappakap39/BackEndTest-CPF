@@ -476,49 +476,6 @@ const searchUserByEorF: RequestHandler = async (req, res) => {
     }
 };
 
-// const SentMail: RequestHandler = async (req, res) => {
-//     const prisma = new PrismaClient();
-
-//     try {
-//         const { EmailInput, PasswordInput } = req.body;
-
-//         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//         if (!emailRegex.test(EmailInput)) {
-//             res.status(403).json({ error: 'CheckValidate: Invalid email format' });
-//             return;
-//         }
-//         const userByEmail = await prisma.user.findUnique({
-//             where: {
-//                 Email: EmailInput,
-//             },
-//         });
-
-//         if (userByEmail) {
-//             // ใช้ Bcrypt เพื่อแฮชรหัสผ่าน
-//             const passwordMatch = await bcrypt.compare(PasswordInput, userByEmail.Password);
-//             if (passwordMatch) {
-//                 console.log('User :', userByEmail);
-//                 res.status(200).json({ 
-//                     User: userByEmail,
-                    
-//                 });
-//             } else {
-//                 res.status(403).json({ error: 'Password in correct' });
-//             }
-//         } else {
-//             res.status(403).json({ error: 'None User' });
-//         }
-
-//         return res.json(userByEmail);
-//     } catch (error) {
-//         console.error('Error:', error);
-//         return res.status(500).json({ error: 'Internal Server Error' });
-//     } finally {
-//         await prisma.$disconnect();
-//     }
-// };
-
-
 export {
     getUserAll,
     addUserAll,

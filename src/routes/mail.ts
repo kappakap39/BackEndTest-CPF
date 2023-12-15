@@ -1,7 +1,12 @@
 import express from 'express';
-import { SentMail } from '../controllers/mailController'
+import { SentMail, VerifyAddToken } from '../controllers/mailController'
+import {authToken, authTokenOTP} from '../middleware/authUser';
+import { AddToken } from '../controllers/authTokenController'
+
 const mail = express.Router();
 
+// mail.post('/SentMail', authTokenOTP, SentMail);
 mail.post('/SentMail', SentMail);
+mail.post('/VerifyAddToken', VerifyAddToken);
 
 export default mail;

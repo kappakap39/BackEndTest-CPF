@@ -57,6 +57,22 @@ const AddToken = async (req: Request, res: Response, next: NextFunction) => {
             },
         });
 
+        if (user) {
+            // ตรวจสอบความถูกต้องของรหัสผ่านที่ได้จากฐานข้อมูล
+            const isPasswordValid = bcrypt.compareSync(Password, user.Password);
+
+            if (isPasswordValid) {
+                // รหัสผ่านถูกต้อง
+                console.log('User authenticated successfully.');
+            } else {
+                // รหัสผ่านไม่ถูกต้อง
+                console.log('Invalid password.');
+            }
+        } else {
+            // ไม่พบผู้ใช้
+            console.log('User not found.');
+        }
+
         if (!user) {
             return res.status(403).json({ error: 'None User' });
         }
@@ -109,9 +125,9 @@ const AddToken = async (req: Request, res: Response, next: NextFunction) => {
         } catch (err) {
             console.log(err);
         }
-
+        console.log('decoded:', decoded);
         // ส่งข้อมูล Token และข้อมูลที่ถอดรหัสได้กลับ
-        return res.status(200).json({ token, decoded });
+        return res.status(200).json({ Token: token, Decoded: decoded });
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -134,35 +150,42 @@ const verifyToken = (tokenCheck: string, SECRET_KEY: string) => {
 //!Delete token
 const Logout = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        
+        const SECRET_KEY = process.env.SECRET_KEY || 'default_secret_key';
         const token = req.headers.authorization?.split(' ')[1];
 
         if (!token) {
-            return res.status(403).json({ error: 'Header not found' });
+            return res.status(403).json({ error: 'Token not found' });
         }
+        
+        // ให้ถือว่า Token ถูกต้องเพื่อให้ได้ decodedToken
+        const decodedToken = verifyToken(token, SECRET_KEY) as { UserID: string };
 
-        console.log('token to logout:', token);
-        // กำหนดคีย์ลับสำหรับการสร้างและตรวจสอบ Token
-        const SECRET_KEY = process.env.SECRET_KEY || 'default_secret_key';
+        // ตรวจสอบความถูกต้องของ token ที่ค้นหาได้
+        const tokenuser = await prisma.token.findFirst({
+            where: {
+                TokenValue: token,
+            },
+        });
 
-        // ใช้ union type เพื่อระบุชนิดของ decodedToken
-        const decodedToken = verifyToken(token, SECRET_KEY) as { UserID: string; exp: number};
-
-        // ตรวจสอบว่า decodedToken ไม่เป็น null และมีคุณสมบัติ 'UserID'
-        if (decodedToken.UserID) {
-            // ในกรณีที่มี 'UserID', หากต้องการใช้ค่านี้ต่อในโค้ด
-            const userID: string = decodedToken.UserID;
-            console.log('Decoded Token:', decodedToken);
-
-            // ทำการลบ Token หรืออื่น ๆ ตามที่คุณต้องการทำที่นี้
-            // const tokenIndex = userTokens.indexOf(token);
-            // if (tokenIndex !== -1) {
-            //     userTokens.splice(tokenIndex, 1);
-            // }
-
-            res.json({ success: true, message: 'Logout successful' });
+        if (!tokenuser) {
+            return res.status(403).json({ error: 'Invalid Token' });
+        }
+        // ตรวจสอบความถูกต้องของ decodedToken
+        if (decodedToken && decodedToken.UserID) {
+            // ตรวจสอบว่า UserID ตรงกับค่าที่คุณต้องการหรือไม่
+            if (decodedToken.UserID === tokenuser.UserID) {
+                // หา token แล้วให้ทำการลบ
+                await prisma.token.delete({
+                    where: {
+                        TokenID: tokenuser.TokenID,
+                    },
+                });
+                // รับรองว่า Token ถูกต้องและถูกลบ
+                return res.status(200).json({ success: 'Logout successfully', decodedToken });
+            } else {
+                return res.status(403).json({ error: 'Invalid Token User' });
+            }
         } else {
-            // ในกรณีที่ไม่มี 'UserID' หรือ decodedToken เป็น null
             return res.status(403).json({ error: 'Invalid Token' });
         }
     } catch (error) {

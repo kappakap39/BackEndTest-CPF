@@ -13,6 +13,7 @@ import product from './routes/Product';
 import ProductCategory from './routes/ProductCategory';
 import UserMD from './routes/authToken';
 import mail from './routes/mail';
+import File from './routes/authFile';
 
 
 const app = express();
@@ -38,6 +39,7 @@ app.use('/product', product);
 app.use('/ProductCategory', ProductCategory);
 app.use('/UserMD', UserMD);
 app.use('/mail', mail);
+app.use('/File', File);
 // app.use('/', test);
 
 

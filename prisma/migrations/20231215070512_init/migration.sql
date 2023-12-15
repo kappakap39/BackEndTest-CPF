@@ -94,6 +94,18 @@ CREATE TABLE "Token" (
     CONSTRAINT "Token_pkey" PRIMARY KEY ("TokenID")
 );
 
+-- CreateTable
+CREATE TABLE "File" (
+    "FileID" UUID NOT NULL,
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+    "UserID" UUID NOT NULL,
+    "FilePath" TEXT NOT NULL,
+    "FileName" VARCHAR(255) NOT NULL,
+
+    CONSTRAINT "File_pkey" PRIMARY KEY ("FileID")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "People_Username_key" ON "People"("Username");
 
@@ -117,3 +129,6 @@ ALTER TABLE "OrderDetial" ADD CONSTRAINT "OrderDetial_ProductID_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "Token" ADD CONSTRAINT "Token_UserID_fkey" FOREIGN KEY ("UserID") REFERENCES "User"("UserID") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "File" ADD CONSTRAINT "File_UserID_fkey" FOREIGN KEY ("UserID") REFERENCES "User"("UserID") ON DELETE RESTRICT ON UPDATE CASCADE;

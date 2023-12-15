@@ -23,25 +23,27 @@ model People {
 }
 
 model User {
-  UserID     String   @id @default(uuid()) @db.Uuid
-  Email      String   @unique @db.VarChar(255)
-  Password   String   @db.VarChar(255)
-  FirstName  String   @db.VarChar(255)
-  LastName   String   @db.VarChar(255)
-  Address    Json?    @db.Json()
-  Tel        String   @db.VarChar(10)
+  UserID     String    @id @default(uuid()) @db.Uuid
+  Email      String    @unique @db.VarChar(255)
+  Password   String    @db.VarChar(255)
+  FirstName  String    @db.VarChar(255)
+  LastName   String    @db.VarChar(255)
+  Address    Json?     @db.Json()
+  Tel        String    @db.VarChar(10)
   Otp        String?
   OtpExpired DateTime?
-  Status     Boolean  @default(true)
-  Remove     Boolean  @default(false)
-  Active     Boolean  @default(false)
-  CreatedAt  DateTime @default(now())
-  UpdatedAt  DateTime @updatedAt
+  Status     Boolean   @default(true)
+  Remove     Boolean   @default(false)
+  Active     Boolean   @default(false)
+  CreatedAt  DateTime  @default(now())
+  UpdatedAt  DateTime  @updatedAt
 
   // เพิ่มความสัมพันธ์กับ Product
   order Order[] @relation("OrderToUser")
 
   token Token[] @relation(name: "Tokens")
+
+  file File[] @relation(name: "File")
 }
 
 model ProductCategory {
@@ -109,4 +111,14 @@ model Token {
   TokenValue String
   user       User     @relation(name: "Tokens", fields: [UserID], references: [UserID])
   // user User  @relation(name: "Token", fields: [UserID], references: [UserID], onDelete: Cascade)
+}
+
+model File {
+  FileID    String   @id @default(uuid()) @db.Uuid
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+  UserID    String   @db.Uuid
+  FilePath  String
+  FileName  String   @db.VarChar(255)
+  user      User     @relation(name: "File", fields: [UserID], references: [UserID])
 }
