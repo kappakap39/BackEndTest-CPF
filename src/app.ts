@@ -12,9 +12,9 @@ import OrderShow from './routes/OrderShow';
 import product from './routes/Product';
 import ProductCategory from './routes/ProductCategory';
 import UserMD from './routes/authToken';
-import mail from './routes/mail';
+import mail from './routes/authmail';
 import File from './routes/authFile';
-
+import multer from 'multer';
 
 const app = express();
 

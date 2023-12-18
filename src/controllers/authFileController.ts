@@ -5,9 +5,7 @@ import prisma from '../lib/db';
 import { PrismaClient } from '@prisma/client';
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, path.join(__dirname, '../../assets/uploads'));
-    },
+    destination: '../../assets/uploads',
     filename: (req, file, cb) => {
         cb(null, `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`);
     },
@@ -16,11 +14,11 @@ const storage = multer.diskStorage({
 // const storage = multer.memoryStorage();
 const upload = multer({
     storage: storage,
-    limits: { fileSize: 1024 * 1024 * 150 }, // 150 MB
+    // limits: { fileSize: 1024 * 1024 * 150 }, // 150 MB
 }).single('file');
 
 
-const UpFile = async (req: Request, res: Response, next: NextFunction) => {
+const UpFile = async (req: Request, res: Response, next: NextFunction)  => {
     const checkHeader = req.headers.authorization?.split(' ')[1];
     console.log('checkHeader:', checkHeader);
 
@@ -54,30 +52,20 @@ const UpFile = async (req: Request, res: Response, next: NextFunction) => {
                     return res.status(400).json({ success: false, error: 'File upload failed' });
                 }
 
-                if (!req.body.filePath) {
-                    console.log("body",req.body);
-                    console.log("file",req.file);
+                if (!req.file) {
                     return res.status(400).json({ success: false, message: 'No file uploaded' });
                 }
 
-                const filePath = req.body.filePath;
+                const filePath = req.file.path;
                 const fileName = path.basename(filePath);
 
-                if (filePath) {
-                    const filePathString = filePath.toString();
-                    const fileNameString = fileName.toString();
-                    const userIDString = userID.toString();
-
-                    await prisma.file.create({
-                        data: {
-                            FilePath: filePathString,
-                            FileName: fileNameString,
-                            UserID: userIDString,
-                        },
-                    });
-                } else {
-                    return res.status(402).json({ message: 'None found filePath' });
-                }
+                await prisma.file.create({
+                    data: {
+                        FilePath: filePath,
+                        FileName: fileName,
+                        UserID: userID,
+                    },
+                });
 
                 return res
                     .status(200)

@@ -19,22 +19,11 @@ const SentMail: RequestHandler = async (req, res, next) => {
     // const { Email, Password } = req.body;
     const { Email } = req.body;
     try {
-        //! check user
-        const lowercasedEmail = Email.toLowerCase();
-        // ค้นหาข้อมูลผู้ใช้จากฐานข้อมูล
-        const user = await prisma.user.findUnique({
-            where: {
-                Email: lowercasedEmail,
-            },
-        });
-        if (!user) {
-            return res.status(403).json({ error: 'None User' });
-        }
-
         const schema = Joi.object({
             Email: Joi.string().email().min(1).max(255).required(),
             // Password: Joi.string().min(1).max(255).required(),
         });
+        
         // กำหนดตัวเลือกสำหรับการตรวจสอบข้อมูล
         const optionsError = {
             abortEarly: false, // แสดงทุกข้อผิดพลาด
@@ -50,15 +39,27 @@ const SentMail: RequestHandler = async (req, res, next) => {
                 data: error.details,
             });
         }
+        
+        //! check user
+        const lowercasedEmail = Email.toLowerCase();
+        // ค้นหาข้อมูลผู้ใช้จากฐานข้อมูล
+        const user = await prisma.user.findUnique({
+            where: {
+                Email: lowercasedEmail,
+            },
+        });
+        if (!user) {
+            return res.status(403).json({ error: 'None User' });
+        }
 
         // ตรวจสอบความถูกต้องของรหัสผ่าน
         // const passwordMatch = await bcrypt.compare(Password, user.Password);
-
+        
         // if (!passwordMatch) {
-        //     return res.status(403).json({ error: 'Password incorrect' });
-        // }
-
-        // // ตรวจสอบว่า Email และ Password ถูกส่งมาหรือไม่
+            //     return res.status(403).json({ error: 'Password incorrect' });
+            // }
+            
+            // // ตรวจสอบว่า Email และ Password ถูกส่งมาหรือไม่
         // if (!lowercasedEmail || !Password) {
         //     return res.status(403).json({ error: 'Check: Email or Password not found' });
         // }
@@ -132,9 +133,9 @@ const SentMail: RequestHandler = async (req, res, next) => {
                     UserID: OtpToUser.UserID,
                 },
             });
-            if (!checkUser) {
-                return res.status(422).json({ error: 'checkUser not found' });
-            }
+            // if (!checkUser) {
+            //     return res.status(422).json({ error: 'checkUser not found' });
+            // }
 
             if (OtpToUser.Otp) {
                 payload['Otp'] = OtpToUser.Otp;
@@ -150,9 +151,7 @@ const SentMail: RequestHandler = async (req, res, next) => {
                 },
                 data: payload,
             });
-            return res
-                .status(200)
-                .json({ success: true, message: 'OTP sent successfully to UserID'});
+            return res.status(200).json({ success: true, message: 'OTP sent successfully to UserID' });
             // console.log({ success: true, message: 'OTP sent successfully to UserID', OtpToUser, info, update });
             // next();
         });
@@ -167,18 +166,18 @@ const SentMail: RequestHandler = async (req, res, next) => {
 
 //! กำหนดฟังก์ชั่นสำหรับตรวจสอบ verifyToken Token
 // ให้ฟังก์ชัน verifyToken รับค่าเป็น union type
-const verifyOTP = (PasswordOTP: string, OTPCheck: string) => {
-    return PasswordOTP === OTPCheck;
+const verifyOTP = (OTP: string, OTPCheck: string) => {
+    return OTP === OTPCheck;
 };
 
 //!Verify to Add Token
 const VerifyAddToken = async (req: Request, res: Response, next: NextFunction) => {
-    const { Email, PasswordOTP } = req.body;
+    const { Email, OTP } = req.body;
     try {
         // ตรวจสอบความถูกต้องของข้อมูลที่รับมา
         const schema = Joi.object({
             Email: Joi.string().email().min(1).max(255).required(),
-            PasswordOTP: Joi.string().min(1).max(255).required(),
+            OTP: Joi.string().min(1).max(255).required(),
         });
 
         // กำหนดตัวเลือกสำหรับการตรวจสอบข้อมูล
@@ -214,7 +213,7 @@ const VerifyAddToken = async (req: Request, res: Response, next: NextFunction) =
         const OTPCheck = user.Otp;
         // ตรวจสอบว่า OTPCheck ไม่ใช่ null ก่อนนำไปใช้
         if (OTPCheck !== null) {
-            if (verifyOTP(PasswordOTP, OTPCheck)) {
+            if (verifyOTP(OTP, OTPCheck)) {
                 // OTP ถูกต้อง
                 console.log('OTP is valid', OTPCheck);
                 // ต่อไปทำงานตามที่ต้องการ

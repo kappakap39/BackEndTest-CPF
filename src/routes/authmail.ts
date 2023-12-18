@@ -1,5 +1,5 @@
 import express from 'express';
-import { SentMail, VerifyAddToken } from '../controllers/mailController'
+import { SentMail, VerifyAddToken } from '../controllers/authmailController'
 import {authToken, authTokenOTP} from '../middleware/authUser';
 import { AddToken } from '../controllers/authTokenController'
 
