@@ -28,6 +28,8 @@ model User {
   Password   String    @db.VarChar(255)
   FirstName  String    @db.VarChar(255)
   LastName   String    @db.VarChar(255)
+  Level      String?
+  Img        String?
   Address    Json?     @db.Json()
   Tel        String    @db.VarChar(10)
   Otp        String?
@@ -42,6 +44,8 @@ model User {
   order Order[] @relation("OrderToUser")
 
   token Token[] @relation(name: "Tokens")
+
+  loggets Loggets[] @relation(name: "loggets")
 
   file File[] @relation(name: "File")
 }
@@ -114,11 +118,26 @@ model Token {
 }
 
 model File {
-  FileID    String   @id @default(uuid()) @db.Uuid
-  CreatedAt DateTime @default(now())
-  UpdatedAt DateTime @updatedAt
-  UserID    String   @db.Uuid
-  FilePath  String
-  FileName  String   @db.VarChar(255)
-  user      User     @relation(name: "File", fields: [UserID], references: [UserID])
+  FileID       String   @id @default(uuid()) @db.Uuid
+  CreatedAt    DateTime @default(now())
+  UpdatedAt    DateTime @updatedAt
+  UserID       String   @db.Uuid
+  FileName     String   @unique
+  OriginalName String   
+  FilePath     String   
+  FileKey      String   
+  Mimetype     String   
+  FileSize     String   
+
+  user User @relation(name: "File", fields: [UserID], references: [UserID])
+}
+
+model Loggets {
+  FileID     String   @id @default(uuid()) @db.Uuid
+  CreatedAt  DateTime @default(now())
+  UpdatedAt  DateTime @updatedAt
+  UserID     String   @db.Uuid
+  TypeLogger String
+
+  user User @relation(name: "loggets", fields: [UserID], references: [UserID])
 }

@@ -19,6 +19,8 @@ CREATE TABLE "User" (
     "Password" VARCHAR(255) NOT NULL,
     "FirstName" VARCHAR(255) NOT NULL,
     "LastName" VARCHAR(255) NOT NULL,
+    "Level" TEXT,
+    "Img" TEXT,
     "Address" JSON,
     "Tel" VARCHAR(10) NOT NULL,
     "Otp" TEXT,
@@ -100,10 +102,25 @@ CREATE TABLE "File" (
     "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "UpdatedAt" TIMESTAMP(3) NOT NULL,
     "UserID" UUID NOT NULL,
+    "FileName" TEXT NOT NULL,
+    "OriginalName" TEXT NOT NULL,
     "FilePath" TEXT NOT NULL,
-    "FileName" VARCHAR(255) NOT NULL,
+    "FileKey" TEXT NOT NULL,
+    "Mimetype" TEXT NOT NULL,
+    "FileSize" TEXT NOT NULL,
 
     CONSTRAINT "File_pkey" PRIMARY KEY ("FileID")
+);
+
+-- CreateTable
+CREATE TABLE "Loggets" (
+    "FileID" UUID NOT NULL,
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+    "UserID" UUID NOT NULL,
+    "TypeLogger" TEXT NOT NULL,
+
+    CONSTRAINT "Loggets_pkey" PRIMARY KEY ("FileID")
 );
 
 -- CreateIndex
@@ -114,6 +131,9 @@ CREATE UNIQUE INDEX "People_Email_key" ON "People"("Email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_Email_key" ON "User"("Email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "File_FileName_key" ON "File"("FileName");
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_CateGoryID_fkey" FOREIGN KEY ("CateGoryID") REFERENCES "ProductCategory"("CategoryID") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -132,3 +152,6 @@ ALTER TABLE "Token" ADD CONSTRAINT "Token_UserID_fkey" FOREIGN KEY ("UserID") RE
 
 -- AddForeignKey
 ALTER TABLE "File" ADD CONSTRAINT "File_UserID_fkey" FOREIGN KEY ("UserID") REFERENCES "User"("UserID") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Loggets" ADD CONSTRAINT "Loggets_UserID_fkey" FOREIGN KEY ("UserID") REFERENCES "User"("UserID") ON DELETE RESTRICT ON UPDATE CASCADE;

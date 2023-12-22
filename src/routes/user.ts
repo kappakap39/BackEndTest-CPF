@@ -1,9 +1,10 @@
 import express from 'express';
-import { getUserAll, addUserAll, updateUserAll, deleteUserAll, getUserByID, searchUserByEmail, searchUserByFirstName, searchUserByEF, searchUserByEorF, } from '../controllers/User';
+import { getUserAll, addUserAll, updateUserAll, deleteUserAll, getUserByID, searchUserByEmail, searchUserByFirstName, searchUserByEF, searchUserByEorF, addUserIMG, } from '../controllers/User';
 const root = express.Router();
 
 root.get('/getUserAll', getUserAll);
 root.post('/addUserAll', addUserAll);
+root.post('/addUserIMG', addUserIMG);
 root.patch('/updateUserAll', updateUserAll);
 root.delete('/deleteUserAll', deleteUserAll);
 root.get('/getUserByID/:UserIDInput', getUserByID);

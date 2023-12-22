@@ -10,7 +10,7 @@ const expirationTime = process.env.EXPIRATION_TIME;
 // const expirationTime = process.env.EXPIRATION_TIME || 3600000;
 
 //! Add Token
-const AddToken = async (req: Request, res: Response, next: NextFunction) => {
+const Login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { Email, Password } = req.body;
 
@@ -114,6 +114,13 @@ const AddToken = async (req: Request, res: Response, next: NextFunction) => {
                     Expiration: new Date(Date.now() + Number(expirationTime)),
                 },
             });
+
+            await prisma.loggets.create({
+                data: {
+                    UserID: user.UserID,
+                    TypeLogger: 'LogIn',
+                },
+            });
         } else {
             return res.status(402).json({ message: 'None found token' });
         }
@@ -156,7 +163,7 @@ const Logout = async (req: Request, res: Response, next: NextFunction) => {
         if (!token) {
             return res.status(403).json({ error: 'Token not found' });
         }
-        
+
         // ให้ถือว่า Token ถูกต้องเพื่อให้ได้ decodedToken
         const decodedToken = verifyToken(token, SECRET_KEY) as { UserID: string };
 
@@ -180,6 +187,14 @@ const Logout = async (req: Request, res: Response, next: NextFunction) => {
                         TokenID: tokenuser.TokenID,
                     },
                 });
+
+                await prisma.loggets.create({
+                    data: {
+                        UserID: tokenuser.UserID,
+                        TypeLogger: 'LogOut',
+                    },
+                });
+
                 // รับรองว่า Token ถูกต้องและถูกลบ
                 return res.status(200).json({ success: 'Logout successfully', decodedToken });
             } else {
@@ -193,5 +208,93 @@ const Logout = async (req: Request, res: Response, next: NextFunction) => {
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };
+//!check token to user
+const TokenUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const SECRET_KEY = process.env.SECRET_KEY || 'default_secret_key';
+        const token = req.headers.authorization?.split(' ')[1];
+        const KeyToken = req.query.UserToToken as string;
+        // console.log('UserToToken:', userToToken);
 
-export { AddToken, Logout };
+        if (!token) {
+            return res.status(403).json({ error: 'Token not found' });
+        }
+
+        if (!KeyToken) {
+            return res.status(403).json({ error: 'user To Token not found' });
+        }
+
+        const decodedToken = verifyToken(token, SECRET_KEY) as { UserID: string };
+
+        const tokenAD = await prisma.token.findFirst({
+            where: {
+                TokenValue: token,
+            },
+        });
+
+        const tokenKey = await prisma.token.findFirst({
+            where: {
+                TokenValue: KeyToken,
+            },
+        });
+
+        if (!tokenAD) {
+            return res.status(403).json({ error: 'Invalid tokenAD' });
+        }
+        if (!tokenKey) {
+            return res.status(403).json({ error: 'Invalid tokenKey' });
+        }
+
+        if (decodedToken && decodedToken.UserID === tokenAD.UserID && tokenKey.UserID) {
+            const AD_Token = await prisma.user.findUnique({
+                where: {
+                    UserID: tokenAD.UserID,
+                },
+                select: {
+                    Email: true,
+                    FirstName: true,
+                    LastName: true,
+                    Tel: true,
+                    Address: true,
+                },
+            });
+            const KeyUser = await prisma.user.findUnique({
+                where: {
+                    UserID: tokenKey.UserID,
+                },
+                select: {
+                    Email: true,
+                    FirstName: true,
+                    LastName: true,
+                    Tel: true,
+                    Address: true,
+                },
+            });
+
+            if (!AD_Token) {
+                return res.status(404).json({ error: 'User not found' });
+            }
+            if (!KeyUser) {
+                return res.status(404).json({ error: 'Key User not found' });
+            }
+
+            const fullName = `${AD_Token.FirstName} ${AD_Token.LastName}`;
+            const fullNameKeyUser = `${KeyUser.FirstName} ${KeyUser.LastName}`;
+
+            return res.status(200).json({
+                success: true,
+                AD_Token: { FullName: fullName },
+                KeyUser: { fullNameKeyUser: fullNameKeyUser },
+                tokenAD: tokenAD.Expiration,
+                tokenKey: tokenKey.Expiration,
+            });
+        } else {
+            return res.status(403).json({ error: 'Invalid Token User' });
+        }
+    } catch (error) {
+        console.error('TokenUser error:', error);
+        res.status(500).json({ success: false, error: 'Internal Server Error' });
+    }
+};
+
+export { Login, Logout, TokenUser };
