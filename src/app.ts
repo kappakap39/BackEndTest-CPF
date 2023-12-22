@@ -5,15 +5,9 @@ import morgan from 'morgan';
 import config from './config';
 import errorHandler from './middleware/errorHandler';
 import fourOhFour from './middleware/fourOhFour';
-import test from './routes/test';
 import user from './routes/user';
-import order from './routes/Order';
-import OrderShow from './routes/OrderShow';
-import product from './routes/Product';
-import ProductCategory from './routes/ProductCategory';
-import UserMD from './routes/authToken';
-import mail from './routes/authmail';
-import File from './routes/authFile';
+import Token from './routes/authToken';
+
 import multer from 'multer';
 
 const app = express();
@@ -31,15 +25,8 @@ app.use(helmet());
 app.use(morgan('tiny'));
 
 // Apply routes before error handling
-app.use('/test', test);
 app.use('/user', user);
-app.use('/order', order);
-app.use('/OrderShow', OrderShow);
-app.use('/product', product);
-app.use('/ProductCategory', ProductCategory);
-app.use('/UserMD', UserMD);
-app.use('/mail', mail);
-app.use('/File', File);
+app.use('/Token', Token);
 // app.use('/', test);
 
 

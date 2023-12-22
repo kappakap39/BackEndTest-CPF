@@ -1,16 +1,12 @@
 import express from 'express';
-import { getUserAll, addUserAll, updateUserAll, deleteUserAll, getUserByID, searchUserByEmail, searchUserByFirstName, searchUserByEF, searchUserByEorF, } from '../controllers/User';
+import { getUserAll, addUser, updateUser, deleteUser, getUserByID } from '../controllers/User';
 const root = express.Router();
 
 root.get('/getUserAll', getUserAll);
-root.post('/addUserAll', addUserAll);
-root.patch('/updateUserAll', updateUserAll);
-root.delete('/deleteUserAll', deleteUserAll);
+root.post('/addUser', addUser);
+root.patch('/updateUser', updateUser);
+root.delete('/deleteUser', deleteUser);
 root.get('/getUserByID/:UserIDInput', getUserByID);
-root.get('/searchUserByEmail/:EmailInput', searchUserByEmail);
-root.get('/searchUserByFirstName/:FirstNameInput', searchUserByFirstName);
-root.get('/searchUserByEF/:EmailInput/:FirstNameInput', searchUserByEF);
-root.get('/searchUserByEorF/:UserEmail/:FirstNameInput', searchUserByEorF);
 
 
 export default root;
