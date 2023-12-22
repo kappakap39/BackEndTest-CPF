@@ -234,6 +234,7 @@ const addUserIMG: RequestHandler = async (req, res) => {
                 Password: hashedPassword,
                 FirstName: validatedData.FirstName.toLowerCase(),
                 LastName: validatedData.LastName.toLowerCase(),
+                Level: validatedData.Level.toLowerCase(),
                 Img: fileName,
                 Otp: validatedData.Otp,
                 OtpExpired: validatedData.OtpExpired,
