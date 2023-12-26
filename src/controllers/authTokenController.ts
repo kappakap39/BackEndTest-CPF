@@ -10,7 +10,7 @@ const expirationTime = process.env.EXPIRATION_TIME;
 // const expirationTime = process.env.EXPIRATION_TIME || 3600000;
 
 //! Add Token
-const AddToken = async (req: Request, res: Response, next: NextFunction) => {
+const Login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { Email, Password } = req.body;
 
@@ -297,4 +297,8 @@ const TokenUser = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
+<<<<<<< HEAD
 export { AddToken, Logout, TokenUser };
+=======
+export { Login, Logout, TokenUser };
+>>>>>>> 65905ce2decc89fbcad5bc52200cceb6e88540b0
