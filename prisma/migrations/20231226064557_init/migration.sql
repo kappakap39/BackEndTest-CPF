@@ -114,13 +114,13 @@ CREATE TABLE "File" (
 
 -- CreateTable
 CREATE TABLE "Loggets" (
-    "FileID" UUID NOT NULL,
+    "LoggetID" UUID NOT NULL,
     "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "UpdatedAt" TIMESTAMP(3) NOT NULL,
     "UserID" UUID NOT NULL,
     "TypeLogger" TEXT NOT NULL,
 
-    CONSTRAINT "Loggets_pkey" PRIMARY KEY ("FileID")
+    CONSTRAINT "Loggets_pkey" PRIMARY KEY ("LoggetID")
 );
 
 -- CreateIndex

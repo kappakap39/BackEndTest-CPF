@@ -9,6 +9,33 @@ require('dotenv').config();
 const expirationTime = process.env.EXPIRATION_TIME;
 // const expirationTime = process.env.EXPIRATION_TIME || 3600000;
 
+// ตรวจสอบ token และบันทึก log เมื่อหมดอายุ
+const handleTokenExpiration = async (token: string, userId: string) => {
+    const tokenExists = await prisma.token.findFirst({
+        where: {
+            TokenValue: token,
+        },
+    });
+    if (!tokenExists) {
+        return console.log({ error: 'None Token handleTokenExpiration' });
+    }
+    if (tokenExists.UserID) {
+        // บันทึก LogOut โดยอัตโนมัติ
+        await prisma.loggets.create({
+            data: {
+                UserID: userId,
+                TypeLogger: 'LogOut ExpirationTime',
+            },
+        });
+        // หา token แล้วให้ทำการลบ
+        await prisma.token.delete({
+            where: {
+                TokenID: tokenExists.TokenID,
+            },
+        });
+    }
+};
+
 //! Add Token
 const Login = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -121,6 +148,12 @@ const Login = async (req: Request, res: Response, next: NextFunction) => {
                     TypeLogger: 'LogIn',
                 },
             });
+
+            // ตั้งเวลาในการเรียกฟังก์ชันที่ทำการบันทึก LogOut โดยอัตโนมัติ
+            setTimeout(async () => {
+                await handleTokenExpiration(token, user.UserID); // เรียกใช้ handleTokenExpiration ที่เราเพิ่มมา
+            }, Number(expirationTime));
+            
         } else {
             return res.status(402).json({ message: 'None found token' });
         }

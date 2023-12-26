@@ -133,7 +133,7 @@ model File {
 }
 
 model Loggets {
-  FileID     String   @id @default(uuid()) @db.Uuid
+  LoggetID     String   @id @default(uuid()) @db.Uuid
   CreatedAt  DateTime @default(now())
   UpdatedAt  DateTime @updatedAt
   UserID     String   @db.Uuid
