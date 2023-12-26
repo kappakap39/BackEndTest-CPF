@@ -1,23 +1,18 @@
 import express from 'express';
-<<<<<<< HEAD
-import { getUserAll, addUser, updateUser, deleteUser, getUserByID } from '../controllers/User';
+import { getUserAll, addUser, updateUser, deleteUser, getUserByID, searchUserByEmail, searchUserByFullname, searchUserByEF, searchUserByEorF, addUserIMG } from '../controllers/User';
+import { upload } from '../Utils/Upload';
+import { checkFile } from '../middleware/authFile';
 const root = express.Router();
 
 root.get('/getUserAll', getUserAll);
 root.post('/addUser', addUser);
+root.post('/addUserIMG', upload.single('file'), checkFile, addUserIMG);
 root.patch('/updateUser', updateUser);
 root.delete('/deleteUser', deleteUser);
-=======
-import { getUserAll, addUserAll, updateUserAll, deleteUserAll, getUserByID, searchUserByEmail, searchUserByFirstName, searchUserByEF, searchUserByEorF, addUserIMG, } from '../controllers/User';
-const root = express.Router();
-
-root.get('/getUserAll', getUserAll);
-root.post('/addUserAll', addUserAll);
-root.post('/addUserIMG', addUserIMG);
-root.patch('/updateUserAll', updateUserAll);
-root.delete('/deleteUserAll', deleteUserAll);
->>>>>>> 65905ce2decc89fbcad5bc52200cceb6e88540b0
 root.get('/getUserByID/:UserIDInput', getUserByID);
-
+root.get('/searchUserByEmail/:EmailInput', searchUserByEmail);
+root.get('/searchUserByFullname/:FullnameInput', searchUserByFullname);
+root.get('/searchUserByEF/:EmailInput/:FullnameInput', searchUserByEF);
+root.get('/searchUserByEorF/:EmailInput/:FullnameInput', searchUserByEorF);
 
 export default root;
