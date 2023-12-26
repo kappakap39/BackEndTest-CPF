@@ -234,7 +234,7 @@ const addUserIMG: RequestHandler = async (req, res) => {
                 Password: hashedPassword,
                 FirstName: validatedData.FirstName.toLowerCase(),
                 LastName: validatedData.LastName.toLowerCase(),
-                Level: validatedData.Level.toLowerCase(),
+                Level: validatedData.Level,
                 Img: fileName,
                 Otp: validatedData.Otp,
                 OtpExpired: validatedData.OtpExpired,
@@ -329,7 +329,7 @@ const addUserAll: RequestHandler = async (req, res) => {
             Password: hashedPassword,
             FirstName: validatedData.FirstName.toLowerCase(),
             LastName: validatedData.LastName.toLowerCase(),
-            Level: validatedData.Level.toLowerCase(),
+            Level: validatedData.Level,
             Otp: validatedData.Otp,
             OtpExpired: validatedData.OtpExpired,
             // FullName: `${validatedData.FirstName} ${validatedData.LastName}`, // Assuming 'FullName' is a combination of first and last name
@@ -408,7 +408,7 @@ const updateUserAll: RequestHandler = async (req, res) => {
             payload['LastName'] = body.LastName.toLowerCase();
         }
         if (body.Level) {
-            payload['Level'] = body.Level.toLowerCase();
+            payload['Level'] = body.Level;
         }
         if (body.Otp) {
             payload['Otp'] = body.Otp;
