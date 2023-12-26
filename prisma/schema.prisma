@@ -1,5 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+//! backend to
 
 generator client {
   provider        = "prisma-client-js"
@@ -9,17 +8,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-model People {
-  PeopleID  String   @id @default(uuid()) @db.Uuid
-  Username  String   @unique @db.VarChar(255)
-  Email     String   @unique @db.VarChar(255)
-  FirstName String   @db.VarChar(255)
-  LastName  String   @db.VarChar(255)
-  Tel       String   @db.VarChar(20)
-  CreatedAt DateTime @default(now())
-  UpdatedAt DateTime @updatedAt
 }
 
 model User {
@@ -40,70 +28,11 @@ model User {
   CreatedAt  DateTime  @default(now())
   UpdatedAt  DateTime  @updatedAt
 
-  // เพิ่มความสัมพันธ์กับ Product
-  order Order[] @relation("OrderToUser")
-
   token Token[] @relation(name: "Tokens")
 
   loggets Loggets[] @relation(name: "loggets")
 
   file File[] @relation(name: "File")
-}
-
-model ProductCategory {
-  CategoryID   String   @id @default(uuid()) @db.Uuid
-  CategoryName String   @db.VarChar(255)
-  Description  String?  @db.VarChar(511)
-  CreatedAt    DateTime @default(now())
-  UpdatedAt    DateTime @updatedAt
-
-  // เพิ่มความสัมพันธ์กับ Product
-  products Product[] @relation("ProductCategoryToProduct")
-}
-
-model Product {
-  ProductID   String   @id @default(uuid()) @db.Uuid
-  CateGoryID  String   @db.Uuid
-  ProductName String   @db.VarChar(255)
-  Description String?  @db.VarChar(511)
-  Price       Float
-  Stock       Int
-  Status      Boolean  @default(true)
-  CreatedAt   DateTime @default(now())
-  UpdatedAt   DateTime @updatedAt
-
-  // เพิ่มความสัมพันธ์กับ ProductCategory
-  category ProductCategory @relation("ProductCategoryToProduct", fields: [CateGoryID], references: [CategoryID])
-  // เพิ่มความสัมพันธ์กับ Product
-  product  OrderDetial[]   @relation("ProductToOrderDetail")
-}
-
-model Order {
-  OrderID        String   @id @default(uuid()) @db.Uuid
-  UserID         String   @db.Uuid
-  DeliveryStatus Boolean  @default(false)
-  CreatedAt      DateTime @default(now())
-  UpdatedAt      DateTime @updatedAt
-
-  // เพิ่มความสัมพันธ์กับ User
-  user         User          @relation("OrderToUser", fields: [UserID], references: [UserID])
-  // เพิ่มความสัมพันธ์กับ OrderDetail
-  orderDetails OrderDetial[] @relation("OrderToOrderDetail")
-}
-
-model OrderDetial {
-  OrderDetailID String   @id @default(uuid()) @db.Uuid
-  OrderID       String   @db.Uuid
-  ProductID     String   @db.Uuid
-  Amount        Int
-  Price         Float
-  CreatedAt     DateTime @default(now())
-  UpdatedAt     DateTime @updatedAt
-
-  // เพิ่มความสัมพันธ์กับ Order
-  order   Order   @relation("OrderToOrderDetail", fields: [OrderID], references: [OrderID])
-  // เพิ่มความสัมพันธ์กับ Product
-  product Product @relation("ProductToOrderDetail", fields: [ProductID], references: [ProductID])
 }
 
 model Token {

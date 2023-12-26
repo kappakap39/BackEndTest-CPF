@@ -10,111 +10,6 @@ import path from 'path';
 import prisma from '../lib/db';
 const fs = require('fs');
 
-//!Get User All
-// const getUserAll: RequestHandler = async (req, res) => {
-//     const prisma = new PrismaClient();
-//     try {
-//         const users = await prisma.user.findMany();
-//         if (users.length === 0) {
-//             return res.status(404).json({ users: 'None users' });
-//         }
-//         return res.json(users);
-//     } catch (error) {
-//         console.error('Error:', error);
-//         return res.status(500).json({ error: 'Internal Server Error' });
-//     } finally {
-//         await prisma.$disconnect();
-//     }
-// };
-
-//!Create User
-// const addUserAll: RequestHandler = async (req, res) => {
-//     // create schema object
-//     const schema =  Joi.object({
-
-//         Email:      Joi.string().min(1).max(255).required(),
-//         Password:   Joi.string().min(1).max(255).required(),
-//         FirstName:  Joi.string().min(1).max(255).required(),
-//         LastName:   Joi.string().min(1).max(255).required(),
-//         Address: Joi.object([{
-//             province: Joi.string().max(255).required(),
-//             district: Joi.string().max(255).required(),
-//             subdistrict: Joi.string().max(255).required(),
-//             Additional: Joi.string().max(255).required()
-//         }]).max(255),
-//         Tel:        Joi.string().min(1).max(10).required(),
-//         Status:     Joi.boolean(),
-//         Remove:     Joi.boolean(),
-//         Active:     Joi.boolean(),
-
-//     });
-
-//     // schema options
-//     const options = {
-//         abortEarly: false, // include all errors
-//         allowUnknown: true, // ignore unknown props
-//         stripUnknown: true, // remove unknown props
-//     };
-
-//     // validate request body against schema
-//     const { error } = schema.validate(req.body, options);
-
-//     if (error) {
-//         return res.status(422).json({
-//             status: 422,
-//             message: 'Unprocessable Entity',
-//             data: error.details,
-//         });
-//     }
-
-//     const body = req.body;
-//     const prisma = new PrismaClient();
-
-//     return await prisma.$transaction(async function (tx) {
-//         const duplicateUser = await tx.user.findMany({
-//             //เช็คว่าตัวไหนซ้ำ ให้ใส่แค่ตัวที่ซ้ำไม่ได้
-//             where: {
-//                 OR: [
-//                     { Email: { contains: body.Email } },
-//                     { Tel: { contains: body.Tel } }
-//                 ]},
-//         });
-
-//         if (duplicateUser && duplicateUser.length > 0) {
-//             return res.status(422).json({
-//                 status: 422,
-//                 message: 'Email or Tel is duplicate in database.',
-//                 data: {
-//                     Email: body.Email,
-//                     Tel: body.Tel
-//                 },
-//             });
-//         }
-
-//         // Generate salt to hash password
-//         // const Salt = await bcrypt.genSalt(10);
-
-//         const payloadUser = {
-
-//             Email:      body.Email,
-//             Password:   body.Password,
-//             FirstName:  body.FirstName,
-//             LastName:   body.LastName,
-//             Address:    body.Address,
-//             Tel:        body.Tel,
-//             Status:     body.Status,
-//             Remove:     body.Remove,
-//             Active:     body.Active,
-
-//         };
-
-//         const user = await tx.user.create({
-//             data: payloadUser,
-//         });
-
-//         return res.status(201).json(user);
-//     });
-// };
 
 const getUserAll: RequestHandler = async (req, res) => {
     const prisma = new PrismaClient();
@@ -140,6 +35,10 @@ const getUserAll: RequestHandler = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+//!ADD Users
+const addUser: RequestHandler = async (req, res) => {
+=======
 //!ADD Users to IMG
 const storage = multer.diskStorage({
     destination: './assets/uploads',
@@ -262,6 +161,7 @@ const addUserIMG: RequestHandler = async (req, res) => {
 
 //!ADD Users
 const addUserAll: RequestHandler = async (req, res) => {
+>>>>>>> 65905ce2decc89fbcad5bc52200cceb6e88540b0
     // create schema object
     const schema = Joi.object({
         Email: Joi.string().min(1).max(255).required(),
@@ -356,7 +256,7 @@ const addUserAll: RequestHandler = async (req, res) => {
 };
 
 //!Update User
-const updateUserAll: RequestHandler = async (req, res) => {
+const updateUser: RequestHandler = async (req, res) => {
     const schema = Joi.object({
         UserID: Joi.string().uuid().required(),
     });
@@ -449,8 +349,9 @@ const updateUserAll: RequestHandler = async (req, res) => {
     });
 };
 
+
 //!Delete User
-const deleteUserAll: RequestHandler = async (req, res) => {
+const deleteUser: RequestHandler = async (req, res) => {
     const schema = Joi.object({
         UserID: Joi.string().uuid().required(),
     });
@@ -508,106 +409,14 @@ const getUserByID: RequestHandler = async (req, res) => {
     }
 };
 
-//!search user Email
-const searchUserByEmail: RequestHandler = async (req, res) => {
-    const prisma = new PrismaClient();
-    try {
-        const { EmailInput } = req.params;
-        const userByEmail = await prisma.user.findMany({
-            where: {
-                Email: EmailInput,
-            },
-        });
-
-        if (!userByEmail) {
-            return res.status(404).json({ error: 'email not found' });
-        }
-
-        return res.json(userByEmail);
-    } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    } finally {
-        await prisma.$disconnect();
-    }
-};
-
-// //!search user FirstName
-const searchUserByFirstName: RequestHandler = async (req, res) => {
-    const prisma = new PrismaClient();
-    try {
-        const { FirstNameInput } = req.params;
-        const userByFirstNameInput = await prisma.user.findMany({
-            where: {
-                FirstName: FirstNameInput,
-            },
-        });
-
-        if (!userByFirstNameInput) {
-            return res.status(404).json({ error: 'FirstName not found' });
-        }
-
-        return res.json(userByFirstNameInput);
-    } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    } finally {
-        await prisma.$disconnect();
-    }
-};
-
-//!search Email and FirstNameInput
-const searchUserByEF: RequestHandler = async (req, res) => {
-    const prisma = new PrismaClient();
-    try {
-        const { EmailInput } = req.params;
-        const { FirstNameInput } = req.params;
-        const userByEF = await prisma.user.findMany({
-            where: {
-                Email: EmailInput,
-                FirstName: FirstNameInput,
-            },
-        });
-
-        if (!userByEF) {
-            return res.status(404).json({ error: 'Email or FirstName not found' });
-        }
-
-        return res.json(userByEF);
-    } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    } finally {
-        await prisma.$disconnect();
-    }
-};
-
-const searchUserByEorF: RequestHandler = async (req, res) => {
-    const prisma = new PrismaClient();
-    try {
-        const { EmailInput, FirstNameInput } = req.params;
-
-        const userByEF = await prisma.user.findMany({
-            where: {
-                OR: [{ Email: EmailInput }, { FirstName: FirstNameInput }],
-            },
-        });
-
-        if (userByEF.length === 0) {
-            return res.status(404).json({ error: 'Email or FirstName not found' });
-        }
-
-        return res.json(userByEF);
-    } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    } finally {
-        await prisma.$disconnect();
-    }
-};
-
 export {
     getUserAll,
+<<<<<<< HEAD
+    addUser,
+    updateUser,
+    deleteUser,
+    getUserByID
+=======
     addUserAll,
     updateUserAll,
     deleteUserAll,
@@ -617,4 +426,5 @@ export {
     searchUserByEF,
     searchUserByEorF,
     addUserIMG,
+>>>>>>> 65905ce2decc89fbcad5bc52200cceb6e88540b0
 };
