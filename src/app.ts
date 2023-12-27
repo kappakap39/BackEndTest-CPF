@@ -6,6 +6,7 @@ import config from './config';
 import errorHandler from './middleware/errorHandler';
 import fourOhFour from './middleware/fourOhFour';
 import user from './routes/user';
+import UserOrAdmin from './routes/UserOrAdmin';
 import Token from './routes/authToken';
 import mail from './routes/authmail';
 import File from './routes/authFile';
@@ -27,6 +28,7 @@ app.use(morgan('tiny'));
 
 // Apply routes before error handling
 app.use('/user', user);
+app.use('/UserOrAdmin', UserOrAdmin);
 app.use('/Token', Token);
 app.use('/mail', mail);
 app.use('/File', File);

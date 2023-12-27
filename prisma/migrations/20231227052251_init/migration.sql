@@ -123,6 +123,26 @@ CREATE TABLE "Loggets" (
     CONSTRAINT "Loggets_pkey" PRIMARY KEY ("LoggetID")
 );
 
+-- CreateTable
+CREATE TABLE "UserManagement" (
+    "IDUserOrAdmin" UUID NOT NULL,
+    "UserName" TEXT NOT NULL,
+    "Password" TEXT NOT NULL,
+    "FirstName" TEXT,
+    "LastName" TEXT,
+    "Pincode" TEXT NOT NULL,
+    "UserLevel" TEXT NOT NULL,
+    "EffectiveDate" TIMESTAMP(3),
+    "ExpiredDate" TIMESTAMP(3),
+    "SecretQuestion" TEXT,
+    "Answer" TEXT,
+    "Status" BOOLEAN NOT NULL DEFAULT true,
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "UserManagement_pkey" PRIMARY KEY ("IDUserOrAdmin")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "People_Username_key" ON "People"("Username");
 

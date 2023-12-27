@@ -122,21 +122,38 @@ model File {
   UpdatedAt    DateTime @updatedAt
   UserID       String   @db.Uuid
   FileName     String   @unique
-  OriginalName String   
-  FilePath     String   
-  FileKey      String   
-  Mimetype     String   
-  FileSize     String   
+  OriginalName String
+  FilePath     String
+  FileKey      String
+  Mimetype     String
+  FileSize     String
 
   user User @relation(name: "File", fields: [UserID], references: [UserID])
 }
 
 model Loggets {
-  LoggetID     String   @id @default(uuid()) @db.Uuid
+  LoggetID   String   @id @default(uuid()) @db.Uuid
   CreatedAt  DateTime @default(now())
   UpdatedAt  DateTime @updatedAt
   UserID     String   @db.Uuid
   TypeLogger String
 
   user User @relation(name: "loggets", fields: [UserID], references: [UserID])
+}
+
+model UserManagement {
+  IDUserOrAdmin  String    @id @default(uuid()) @db.Uuid
+  UserName       String
+  Password       String
+  FirstName      String
+  LastName       String
+  Pincode        String?
+  UserLevel      String
+  EffectiveDate  DateTime?
+  ExpiredDate    DateTime?
+  SecretQuestion String?
+  Answer         String?
+  Status         Boolean   @default(true)
+  CreatedAt      DateTime  @default(now())
+  UpdatedAt      DateTime  @updatedAt
 }
