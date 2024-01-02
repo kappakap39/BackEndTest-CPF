@@ -5,7 +5,7 @@ import prisma from '../lib/db';
 import { PrismaClient } from '@prisma/client';
 import Joi from 'joi';
 const fs = require('fs');
-import {UpFile} from '../controllers/authFileController';
+// import {UpFile} from '../controllers/authFileController';
 
 const storage = multer.diskStorage({
     destination: './assets/uploads',

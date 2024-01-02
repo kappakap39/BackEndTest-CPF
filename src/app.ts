@@ -10,6 +10,7 @@ import UserOrAdmin from './routes/UserOrAdmin';
 import Token from './routes/authToken';
 import mail from './routes/authmail';
 import File from './routes/authFile';
+import test from './routes/People';
 import multer from 'multer';
 
 const app = express();
@@ -32,6 +33,7 @@ app.use('/UserOrAdmin', UserOrAdmin);
 app.use('/Token', Token);
 app.use('/mail', mail);
 app.use('/File', File);
+app.use('/test', test);
 // app.use('/', test);
 
 

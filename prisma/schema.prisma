@@ -13,7 +13,8 @@ datasource db {
 model People {
   PeopleID  String   @id @default(uuid()) @db.Uuid
   Username  String   @unique @db.VarChar(255)
-  Email     String   @unique @db.VarChar(255)
+  Status    Boolean? @default(true)
+  Email     String   @db.VarChar(255)
   FirstName String   @db.VarChar(255)
   LastName  String   @db.VarChar(255)
   Tel       String   @db.VarChar(20)
@@ -142,18 +143,48 @@ model Loggets {
 }
 
 model UserManagement {
-  IDUserOrAdmin  String    @id @default(uuid()) @db.Uuid
-  UserName       String
-  Password       String
-  FirstName      String
-  LastName       String
-  Pincode        String?
-  UserLevel      String
-  EffectiveDate  DateTime?
-  ExpiredDate    DateTime?
-  SecretQuestion String?
-  Answer         String?
-  Status         Boolean   @default(true)
-  CreatedAt      DateTime  @default(now())
-  UpdatedAt      DateTime  @updatedAt
+  IDUserOrAdmin        String    @id @default(uuid()) @db.Uuid
+  //!Tab1
+  UserName             String
+  Password             String
+  Pincode              String?
+  UserLevel            String
+  EffectiveDate        DateTime?
+  ExpiredDate          DateTime?
+  InvalidPasswordCount Int?
+  SecretQuestion       String?
+  Answer               String?
+  Status               Boolean   @default(true)
+  //!Tab2
+  Title                String?
+  FirstName            String?
+  LastName             String?
+  AbbreviateName       String?
+  Email                String?   @unique
+  Telephone            String?   @db.VarChar(10)
+  CitiZenID            String?
+  Picture              String?
+  //!Tab3
+  EmpNo                String?
+  DeptCode             String?
+  CompanyCode          String?
+  OperationCode        String?
+  SubOperationCode     String?
+  CentralRefNo         String?
+  BusinessType         String?
+  DocIssueUnit         String?
+  LockLocation         String?
+  DeptFlag             String?
+  GrpSubOperation      String?
+  GrpOperationCode     String?
+  //!Tab4
+  DefaultLanguage      String?
+  FontFamily           String?
+  FontSize             Float?
+  DateFormat           DateTime?
+  TimeZone             DateTime?
+  AmountFormat         Int?
+  //!Standard
+  CreatedAt            DateTime  @default(now())
+  UpdatedAt            DateTime  @updatedAt
 }

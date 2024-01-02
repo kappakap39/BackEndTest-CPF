@@ -126,9 +126,6 @@ const getUserAll: RequestHandler = async (req, res) => {
         if (users.length === 0) {
             return res.status(404).json({ users: 'None users' });
         }
-        const a = "5";
-        const b = "5";
-        return res.status(404).json({"A+B": a+b });
 
         // Map users and add FullnameFL property
         const usersWithFullnameFL = users.map((user) => ({

@@ -285,7 +285,7 @@ const getOrderShowUser: RequestHandler = async (req, res) => {
                     },
                     select: {
                         UserID: true,
-                        FullName: true,
+                        // FullName: true,
                         Email: true,
                         Password: true,
                         Address: true,
