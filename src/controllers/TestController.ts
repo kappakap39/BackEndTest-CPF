@@ -736,6 +736,16 @@ const deleteUser: RequestHandler = async (req, res) => {
     });
 };
 
+const RowText: RequestHandler = async (req, res) => {
+    const { TextRow } = req.body; // รับข้อความจากผู้ใช้
+    const splitRow = TextRow.match(/.{1,5}/g); // ตัดข้อความเป็นชุดตามรูปแบบที่กำหนด
+    const rejoinedText = splitRow ? splitRow.join('') : ''; // นำชุดของตัวอักษรกลับมาต่อกันเหมือนเดิม
+    const numberOfChunks = splitRow ? splitRow.length : 0; // จำนวนของชุดของตัวอักษร
+    const totalLength = rejoinedText.length; // ความยาวของข้อความที่นำชุดของตัวอักษรกลับมาต่อกันได้
+    return res.json({ splitRow, rejoinedText, numberOfChunks, totalLength }); //แสดงข้อมูล
+};
+
+
 export {
     getPeople,
     addPeople,
@@ -747,4 +757,5 @@ export {
     deleteUser,
     getUserByID,
     getPeopleID,
+    RowText,
 };
