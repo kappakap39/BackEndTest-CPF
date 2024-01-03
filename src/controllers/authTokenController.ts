@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken';
 import prisma from '../lib/db';
 import Joi from 'joi';
 import { Token } from '../../../../$RECYCLE.BIN/S-1-5-21-1356744833-2796361643-2745879545-1001/$RA1360Y/.prisma/client/index';
+import { UserToken } from '../middleware/authUser';
 
 require('dotenv').config();
 const expirationTime = process.env.EXPIRATION_TIME;
@@ -236,7 +237,7 @@ const Login = async (req: Request, res: Response, next: NextFunction) => {
                 }
             } else {
                 // รหัสผ่านไม่ถูกต้อง
-                return res.status(400).json({ error:'Invalid password.'});
+                return res.status(400).json({ error: 'Invalid password.' });
             }
         } else {
             // ไม่พบผู้ใช้
@@ -315,13 +316,28 @@ const Logout = async (req: Request, res: Response, next: NextFunction) => {
         res.status(500).json({ success: false, error: 'Internal Server Error' });
     }
 };
+
+// ประกาศ checkHeader ใน Request object ของ Express
+declare global {
+    namespace Express {
+        interface Request {
+            checkHeader?: string;
+        }
+    }
+}
+
 //!check token to user
-const TokenUser = async (req: Request, res: Response, next: NextFunction) => {
+const TokenUser = async (req: Request, res: Response) => {
     try {
         const SECRET_KEY = process.env.SECRET_KEY || 'default_secret_key';
         const token = req.headers.authorization?.split(' ')[1];
         const KeyToken = req.query.UserToToken as string;
         // console.log('UserToToken:', userToToken);
+
+        // ใช้ข้อมูล checkHeader ที่ถูกส่งมาจากไฟล์อื่น
+        const checkHeader = req.checkHeader;
+        // const checkHeader = req.checkHeader?.split(' ')[1];
+        console.log('checkHeader: ', checkHeader);
 
         if (!token) {
             return res.status(403).json({ error: 'Token not found' });

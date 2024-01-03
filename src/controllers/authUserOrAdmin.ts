@@ -11,20 +11,25 @@ import prisma from '../lib/db';
 const fs = require('fs');
 
 const getUserORAdmin: RequestHandler = async (req, res) => {
-    const prisma = new PrismaClient();
+    const prisma = new PrismaClient(); // สร้าง PrismaClient instance
     try {
-        const UserOrAdmin = await prisma.userManagement.findMany();
-        if (UserOrAdmin.length === 0) {
-            return res.status(404).json({ users: 'None users' });
+        const UserOrAdmin = await prisma.userManagement.findMany({
+            orderBy: {
+                CreatedAt: 'desc', // Order by CreatedAt field in descending order (newest first)
+            },
+        }); // ดึงข้อมูลผู้ใช้หรือผู้ดูแลระบบจากฐานข้อมูล
+        if (UserOrAdmin.length === 0) { // ถ้าไม่มีข้อมูลผู้ใช้หรือผู้ดูแลระบบ
+            return res.status(404).json({ users: 'None users' }); // ส่ง HTTP status 404 พร้อมข้อความว่า "None users"
         }
-        return res.json(UserOrAdmin);
+        return res.json(UserOrAdmin); // ส่งข้อมูลผู้ใช้หรือผู้ดูแลระบบกลับไป
     } catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error:', error); // แสดงข้อผิดพลาดในกรณีที่เกิดข้อผิดพลาด
+        return res.status(500).json({ error: 'Internal Server Error' }); // ส่ง HTTP status 500 พร้อมข้อความว่า "Internal Server Error"
     } finally {
-        await prisma.$disconnect();
+        await prisma.$disconnect(); // ปิดการเชื่อมต่อกับฐานข้อมูล PrismaClient
     }
 };
+
 
 //!ADD Users
 const addUserOrAdmin: RequestHandler = async (req, res) => {

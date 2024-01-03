@@ -5,68 +5,14 @@ import { PrismaClient } from '@prisma/client';
 import prisma from '../lib/db';
 
 //!RPeople
-// const getPeople: RequestHandler = async (req, res) => {
-//     try {
-//         // ใช้ PrismaClient instance ที่ถูกสร้างเอาไว้แล้ว
-//         const people = await prisma.people.findMany({
-//             select: {
-//                 Username: true
-//             }
-//         });
-//         if (people.length === 0) {
-//             return res.status(404).json({ people: 'None People' });
-//         }
-//         return res.json(people);
-//     } catch (error) {
-//         console.error('Error:', error);
-//         return res.status(500).json({ error: 'Internal Server Error' });
-//     } finally {
-//         await prisma.$disconnect();
-//     }
-// };
-
 const getPeople: RequestHandler = async (req, res) => {
     try {
         // ใช้ PrismaClient instance ที่ถูกสร้างเอาไว้แล้ว
-        const people = await prisma.people.findMany({
-            select: {
-                PeopleID: true,
-                Username: true,
-                Email: true,
-                Tel: true,
-            },
-        });
-
-        // แยกชุดข้อมูล Username เป็นชุดใหม่เมื่อ Username เกิน 3 ตัวอักษร
-        const modifiedPeople = people.reduce((acc, person) => {
-            const splitUsernames = person.Username.match(/.{1,3}/g);
-            if (splitUsernames) {
-                if (splitUsernames.length > 1) {
-                    acc.push(
-                        ...splitUsernames.map((username) => ({
-                            Username: username,
-                            PeopleID: String(person.PeopleID),
-                            Email: person.Email,
-                            Tel: person.Tel,
-                        })),
-                    );
-                } else {
-                    acc.push({
-                        PeopleID: String(person.PeopleID),
-                        Username: person.Username,
-                        Email: person.Email,
-                        Tel: person.Tel,
-                    });
-                }
-            }
-            return acc;
-        }, [] as { Username: string; PeopleID: string; Email: string; Tel: string }[]); // เพิ่ม annotation ให้ TypeScript รู้ว่า acc เป็น array ของ object ที่มี properties Username, PeopleID, Email, และ Tel
-
-        if (modifiedPeople.length === 0) {
+        const people = await prisma.people.findMany();
+        if (people.length === 0) {
             return res.status(404).json({ people: 'None People' });
         }
-
-        return res.json(modifiedPeople);
+        return res.json(people);
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -74,6 +20,56 @@ const getPeople: RequestHandler = async (req, res) => {
         await prisma.$disconnect();
     }
 };
+
+// const getPeople: RequestHandler = async (req, res) => {
+//     try {
+//         // ใช้ PrismaClient instance ที่ถูกสร้างเอาไว้แล้ว
+//         const people = await prisma.people.findMany({
+//             select: {
+//                 PeopleID: true,
+//                 Username: true,
+//                 Email: true,
+//                 Tel: true,
+//             },
+//         });
+
+//         // แยกชุดข้อมูล Username เป็นชุดใหม่เมื่อ Username เกิน 3 ตัวอักษร
+//         const modifiedPeople = people.reduce((acc, person) => {
+//             const splitUsernames = person.Username.match(/.{1,3}/g);
+//             if (splitUsernames) {
+//                 if (splitUsernames.length > 1) {
+//                     acc.push(
+//                         ...splitUsernames.map((username) => ({
+//                             Username: username,
+//                             PeopleID: String(person.PeopleID),
+//                             Email: person.Email,
+//                             Tel: person.Tel,
+//                         })),
+//                     );
+//                 } else {
+//                     acc.push({
+//                         PeopleID: String(person.PeopleID),
+//                         Username: person.Username,
+//                         Email: person.Email,
+//                         Tel: person.Tel,
+//                     });
+//                 }
+//             }
+//             return acc;
+//         }, [] as { Username: string; PeopleID: string; Email: string; Tel: string }[]); // เพิ่ม annotation ให้ TypeScript รู้ว่า acc เป็น array ของ object ที่มี properties Username, PeopleID, Email, และ Tel
+
+//         if (modifiedPeople.length === 0) {
+//             return res.status(404).json({ people: 'None People' });
+//         }
+
+//         return res.json(modifiedPeople);
+//     } catch (error) {
+//         console.error('Error:', error);
+//         return res.status(500).json({ error: 'Internal Server Error' });
+//     } finally {
+//         await prisma.$disconnect();
+//     }
+// };
 
 //! by ID people
 const getPeopleID: RequestHandler = async (req, res) => {

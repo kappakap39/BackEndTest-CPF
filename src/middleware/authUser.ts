@@ -6,7 +6,7 @@ import config from '../config';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../lib/db';
-import Joi from 'joi';
+import Joi, { any } from 'joi';
 
 // กำหนดฟังก์ชั่นสำหรับตรวจสอบ verifyToken Token
 // ให้ฟังก์ชัน verifyToken รับค่าเป็น union type
@@ -187,6 +187,10 @@ const UserToken: RequestHandler = async (req, res, next) => {
     // ตรวจสอบการมี Header Authorization ใน Request
     const checkHeader = req.headers.authorization;
     const KeyToken = req.query.UserToToken as string;
+
+    // เพิ่มข้อมูล checkHeader เข้าไปใน req object
+    req.checkHeader = 'helloworld';
+    // req.checkHeader = checkHeader as string;
 
     if (!checkHeader) {
         return res.status(403).json({ error: 'Header not found' });
