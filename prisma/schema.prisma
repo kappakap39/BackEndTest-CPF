@@ -187,4 +187,36 @@ model UserManagement {
   //!Standard
   CreatedAt            DateTime  @default(now())
   UpdatedAt            DateTime  @updatedAt
+
+  smsManagement SmsManagement[] @relation("SmsManagements")
+}
+
+model SmsManagement {
+  SmsID         String    @id @default(uuid()) @db.Uuid
+  IDUserOrAdmin String    @db.Uuid
+  Sender        String?
+  Tel           String?
+  Result        String?
+  Contact       String?
+  ScheduleDate  DateTime?
+  Option        String?
+  Description   String?   @default("${SmsManagement.Result}")
+  //!Standard
+  CreatedAt     DateTime  @default(now())
+  UpdatedAt     DateTime  @updatedAt
+
+  smsMessage SmsMessage[] @relation("Messages")
+
+  userManagement UserManagement @relation(name: "SmsManagements", fields: [IDUserOrAdmin], references: [IDUserOrAdmin])
+}
+
+model SmsMessage {
+  MessageID  String   @id @default(uuid()) @db.Uuid
+  SmsID     String   @db.Uuid
+  Message   String?  @db.VarChar(255)
+  //!Standard
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+
+  smsManagement SmsManagement @relation(name: "Messages", fields: [SmsID], references: [SmsID])
 }

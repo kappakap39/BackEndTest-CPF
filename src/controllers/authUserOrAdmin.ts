@@ -36,18 +36,21 @@ const getUserAdminByID: RequestHandler = async (req, res) => {
     const prisma = new PrismaClient();
 
     try {
-        const { IDUserOrAdmin } = req.params;
+        const { IDUserOrAdmin } = req.query;
         console.log('IDUserOrAdmin: ' + IDUserOrAdmin);
-        const ByID = await prisma.userManagement.findFirst({
-            where: {
-                IDUserOrAdmin: IDUserOrAdmin, // ระบุเงื่อนไขการค้นหาข้อมูลที่ต้องการด้วยฟิลด์ที่เป็น unique
-            },
-        });
-
-        if (!ByID) {
-            return res.status(404).json({ error: 'userID not found' });
+        if(IDUserOrAdmin){
+            const ByID = await prisma.userManagement.findUnique({
+                where: {
+                    IDUserOrAdmin: IDUserOrAdmin as string, // ระบุเงื่อนไขการค้นหาข้อมูลที่ต้องการด้วยฟิลด์ที่เป็น unique
+                },
+            });
+            if (!ByID) {
+                return res.status(404).json({ error: 'IDUserOrAdmin not User' });
+            }
+            return res.json(ByID);
+        } else{
+            return res.status(404).json({ error: 'REQ.Params not found' });
         }
-        return res.json(ByID);
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
@@ -73,36 +76,36 @@ const addUserOrAdmin: RequestHandler = async (req, res) => {
         Status: Joi.boolean(),
 
         //!Tab2
-        // Title: Joi.string(),
+        Title: Joi.string(),
         FirstName: Joi.string(),
         LastName: Joi.string(),
-        // AbbreviateName: Joi.string(),
+        AbbreviateName: Joi.string(),
         Email: Joi.string(),
-        // Telephone: Joi.string(),
-        // CitiZenID: Joi.string(),
-        // Picture: Joi.string(),
+        Telephone: Joi.string(),
+        CitiZenID: Joi.string(),
+        Picture: Joi.string(),
 
         //!Tab3
-        // EmpNo: Joi.string(),
-        // DeptCode: Joi.string(),
-        // CompanyCode: Joi.string(),
-        // OperationCode: Joi.string(),
-        // SubOperationCode: Joi.string(),
-        // CentralRefNo: Joi.string(),
-        // BusinessType: Joi.string(),
-        // DocIssueUnit: Joi.string(),
-        // LockLocation: Joi.string(),
-        // DeptFlag: Joi.string(),
-        // GrpSubOperation: Joi.string(),
-        // GrpOperationCode: Joi.string(),
+        EmpNo: Joi.string(),
+        DeptCode: Joi.string(),
+        CompanyCode: Joi.string(),
+        OperationCode: Joi.string(),
+        SubOperationCode: Joi.string(),
+        CentralRefNo: Joi.string(),
+        BusinessType: Joi.string(),
+        DocIssueUnit: Joi.string(),
+        LockLocation: Joi.string(),
+        DeptFlag: Joi.string(),
+        GrpSubOperation: Joi.string(),
+        GrpOperationCode: Joi.string(),
 
         //!Tab3
-        // DefaultLanguage: Joi.string(),
-        // FontFamily: Joi.string(),
-        // FontSize: Joi.number(),
-        // DateFormat: Joi.string(),
-        // TimeZone: Joi.string(),
-        // AmountFormat: Joi.number()
+        DefaultLanguage: Joi.string(),
+        FontFamily: Joi.string(),
+        FontSize: Joi.number(),
+        DateFormat: Joi.string(),
+        TimeZone: Joi.string(),
+        AmountFormat: Joi.number()
     });
 
     // ตัวเลือกของ schema
@@ -128,16 +131,16 @@ const addUserOrAdmin: RequestHandler = async (req, res) => {
     try {
         const duplicateUser = await prisma.userManagement.findMany({
             where: {
-                OR: [{ UserName: { contains: validatedData.UserName } }],
+                OR: [{ Email: { contains: validatedData.Email } },],
             },
         });
 
         if (duplicateUser && duplicateUser.length > 0) {
             return res.status(422).json({
                 status: 422,
-                message: 'Email or Tel is duplicate in the database.',
+                message: 'Email is duplicate in the database.',
                 data: {
-                    UserName: validatedData.UserName,
+                    Email: validatedData.Email,
                 },
             });
         }
@@ -161,31 +164,31 @@ const addUserOrAdmin: RequestHandler = async (req, res) => {
             Title: validatedData.Title,
             FirstName: validatedData.FirstName,
             LastName: validatedData.LastName,
-            AbbreviateName: validatedData.AbbreviateName,
+            // AbbreviateName: validatedData.AbbreviateName,
             Email: validatedData.Email,
             Telephone: validatedData.Telephone,
             CitiZenID: validatedData.CitiZenID,
-            Picture: validatedData.Picture,
+            // Picture: validatedData.Picture,
             //!Tab3
-            EmpNo: validatedData.EmpNo,
-            DeptCode: validatedData.DeptCode,
-            CompanyCode: validatedData.CompanyCode,
-            OperationCode: validatedData.OperationCode,
-            SubOperationCode: validatedData.SubOperationCode,
-            CentralRefNo: validatedData.CentralRefNo,
-            BusinessType: validatedData.BusinessType,
-            DocIssueUnit: validatedData.DocIssueUnit,
-            LockLocation: validatedData.LockLocation,
-            DeptFlag: validatedData.DeptFlag,
-            GrpSubOperation: validatedData.GrpSubOperation,
-            GrpOperationCode: validatedData.GrpOperationCode,
+            // EmpNo: validatedData.EmpNo,
+            // DeptCode: validatedData.DeptCode,
+            // CompanyCode: validatedData.CompanyCode,
+            // OperationCode: validatedData.OperationCode,
+            // SubOperationCode: validatedData.SubOperationCode,
+            // CentralRefNo: validatedData.CentralRefNo,
+            // BusinessType: validatedData.BusinessType,
+            // DocIssueUnit: validatedData.DocIssueUnit,
+            // LockLocation: validatedData.LockLocation,
+            // DeptFlag: validatedData.DeptFlag,
+            // GrpSubOperation: validatedData.GrpSubOperation,
+            // GrpOperationCode: validatedData.GrpOperationCode,
             //!Tab4
-            DefaultLanguage: validatedData.DefaultLanguage,
-            FontFamily: validatedData.FontFamily,
-            FontSize: validatedData.FontSize,
-            DateFormat: validatedData.DateFormat,
-            TimeZone: validatedData.TimeZone,
-            AmountFormat: validatedData.AmountFormat,
+            // DefaultLanguage: validatedData.DefaultLanguage,
+            // FontFamily: validatedData.FontFamily,
+            // FontSize: validatedData.FontSize,
+            // DateFormat: validatedData.DateFormat,
+            // TimeZone: validatedData.TimeZone,
+            // AmountFormat: validatedData.AmountFormat,
         };
 
         const userOrAdmin = await prisma.userManagement.create({

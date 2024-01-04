@@ -2,6 +2,7 @@
 CREATE TABLE "People" (
     "PeopleID" UUID NOT NULL,
     "Username" VARCHAR(255) NOT NULL,
+    "Status" BOOLEAN DEFAULT true,
     "Email" VARCHAR(255) NOT NULL,
     "FirstName" VARCHAR(255) NOT NULL,
     "LastName" VARCHAR(255) NOT NULL,
@@ -128,32 +129,85 @@ CREATE TABLE "UserManagement" (
     "IDUserOrAdmin" UUID NOT NULL,
     "UserName" TEXT NOT NULL,
     "Password" TEXT NOT NULL,
-    "FirstName" TEXT,
-    "LastName" TEXT,
-    "Pincode" TEXT NOT NULL,
+    "Pincode" TEXT,
     "UserLevel" TEXT NOT NULL,
     "EffectiveDate" TIMESTAMP(3),
     "ExpiredDate" TIMESTAMP(3),
+    "InvalidPasswordCount" INTEGER,
     "SecretQuestion" TEXT,
     "Answer" TEXT,
     "Status" BOOLEAN NOT NULL DEFAULT true,
+    "Title" TEXT,
+    "FirstName" TEXT,
+    "LastName" TEXT,
+    "AbbreviateName" TEXT,
+    "Email" TEXT,
+    "Telephone" VARCHAR(10),
+    "CitiZenID" TEXT,
+    "Picture" TEXT,
+    "EmpNo" TEXT,
+    "DeptCode" TEXT,
+    "CompanyCode" TEXT,
+    "OperationCode" TEXT,
+    "SubOperationCode" TEXT,
+    "CentralRefNo" TEXT,
+    "BusinessType" TEXT,
+    "DocIssueUnit" TEXT,
+    "LockLocation" TEXT,
+    "DeptFlag" TEXT,
+    "GrpSubOperation" TEXT,
+    "GrpOperationCode" TEXT,
+    "DefaultLanguage" TEXT,
+    "FontFamily" TEXT,
+    "FontSize" DOUBLE PRECISION,
+    "DateFormat" TIMESTAMP(3),
+    "TimeZone" TIMESTAMP(3),
+    "AmountFormat" INTEGER,
     "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "UpdatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "UserManagement_pkey" PRIMARY KEY ("IDUserOrAdmin")
 );
 
--- CreateIndex
-CREATE UNIQUE INDEX "People_Username_key" ON "People"("Username");
+-- CreateTable
+CREATE TABLE "SmsManagement" (
+    "SmsID" UUID NOT NULL,
+    "IDUserOrAdmin" UUID NOT NULL,
+    "Sender" TEXT,
+    "Tel" TEXT,
+    "Result" TEXT,
+    "Contact" TEXT,
+    "ScheduleDate" TIMESTAMP(3),
+    "Option" TEXT,
+    "Description" TEXT DEFAULT '${SmsManagement.Result}',
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SmsManagement_pkey" PRIMARY KEY ("SmsID")
+);
+
+-- CreateTable
+CREATE TABLE "SmsMessage" (
+    "MessageID" UUID NOT NULL,
+    "SmsID" UUID NOT NULL,
+    "Message" VARCHAR(255),
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "SmsMessage_pkey" PRIMARY KEY ("MessageID")
+);
 
 -- CreateIndex
-CREATE UNIQUE INDEX "People_Email_key" ON "People"("Email");
+CREATE UNIQUE INDEX "People_Username_key" ON "People"("Username");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_Email_key" ON "User"("Email");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "File_FileName_key" ON "File"("FileName");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserManagement_Email_key" ON "UserManagement"("Email");
 
 -- AddForeignKey
 ALTER TABLE "Product" ADD CONSTRAINT "Product_CateGoryID_fkey" FOREIGN KEY ("CateGoryID") REFERENCES "ProductCategory"("CategoryID") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -175,3 +229,9 @@ ALTER TABLE "File" ADD CONSTRAINT "File_UserID_fkey" FOREIGN KEY ("UserID") REFE
 
 -- AddForeignKey
 ALTER TABLE "Loggets" ADD CONSTRAINT "Loggets_UserID_fkey" FOREIGN KEY ("UserID") REFERENCES "User"("UserID") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SmsManagement" ADD CONSTRAINT "SmsManagement_IDUserOrAdmin_fkey" FOREIGN KEY ("IDUserOrAdmin") REFERENCES "UserManagement"("IDUserOrAdmin") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "SmsMessage" ADD CONSTRAINT "SmsMessage_SmsID_fkey" FOREIGN KEY ("SmsID") REFERENCES "SmsManagement"("SmsID") ON DELETE RESTRICT ON UPDATE CASCADE;
