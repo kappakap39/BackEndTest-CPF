@@ -18,7 +18,8 @@ const getUserORAdmin: RequestHandler = async (req, res) => {
                 CreatedAt: 'desc', // Order by CreatedAt field in descending order (newest first)
             },
         }); // ดึงข้อมูลผู้ใช้หรือผู้ดูแลระบบจากฐานข้อมูล
-        if (UserOrAdmin.length === 0) { // ถ้าไม่มีข้อมูลผู้ใช้หรือผู้ดูแลระบบ
+        if (UserOrAdmin.length === 0) {
+            // ถ้าไม่มีข้อมูลผู้ใช้หรือผู้ดูแลระบบ
             return res.status(404).json({ users: 'None users' }); // ส่ง HTTP status 404 พร้อมข้อความว่า "None users"
         }
         return res.json(UserOrAdmin); // ส่งข้อมูลผู้ใช้หรือผู้ดูแลระบบกลับไป
@@ -33,18 +34,19 @@ const getUserORAdmin: RequestHandler = async (req, res) => {
 //!Get User and admin By ID
 const getUserAdminByID: RequestHandler = async (req, res) => {
     const prisma = new PrismaClient();
+
     try {
-        const { IDInput } = req.params;
+        const { IDUserOrAdmin } = req.params;
+        console.log('IDUserOrAdmin: ' + IDUserOrAdmin);
         const ByID = await prisma.userManagement.findFirst({
             where: {
-                IDUserOrAdmin: IDInput,
+                IDUserOrAdmin: IDUserOrAdmin, // ระบุเงื่อนไขการค้นหาข้อมูลที่ต้องการด้วยฟิลด์ที่เป็น unique
             },
         });
 
         if (!ByID) {
             return res.status(404).json({ error: 'userID not found' });
         }
-
         return res.json(ByID);
     } catch (error) {
         console.error('Error:', error);
@@ -54,12 +56,10 @@ const getUserAdminByID: RequestHandler = async (req, res) => {
     }
 };
 
-
 //!ADD Users
 const addUserOrAdmin: RequestHandler = async (req, res) => {
     // สร้าง schema object
     const schema = Joi.object({
-
         //!Tab1
         UserName: Joi.string().min(1).max(255).required(),
         Password: Joi.string().min(1).max(255).required(),
@@ -103,7 +103,6 @@ const addUserOrAdmin: RequestHandler = async (req, res) => {
         // DateFormat: Joi.string(),
         // TimeZone: Joi.string(),
         // AmountFormat: Joi.number()
-
     });
 
     // ตัวเลือกของ schema
