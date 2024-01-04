@@ -188,12 +188,13 @@ model UserManagement {
   CreatedAt            DateTime  @default(now())
   UpdatedAt            DateTime  @updatedAt
 
-  smsManagement SmsManagement[] @relation("SmsManagements")
+  // smsManagement SmsManagement[] @relation("SmsManagements")
 }
 
 model SmsManagement {
   SmsID         String    @id @default(uuid()) @db.Uuid
-  IDUserOrAdmin String    @db.Uuid
+  // IDUserOrAdmin String    @db.Uuid
+  IDUserOrAdmin String?
   Sender        String?
   Tel           String?
   Result        String?
@@ -207,7 +208,7 @@ model SmsManagement {
 
   smsMessage SmsMessage[] @relation("Messages")
 
-  userManagement UserManagement @relation(name: "SmsManagements", fields: [IDUserOrAdmin], references: [IDUserOrAdmin])
+  // userManagement UserManagement @relation(name: "SmsManagements", fields: [IDUserOrAdmin], references: [IDUserOrAdmin])
 }
 
 model SmsMessage {

@@ -134,7 +134,7 @@ const sentSms: RequestHandler = async (req, res) => {
             data: payload,
         });
 
-        const splitRow = body.Message.match(/.{1,5}/g); // ตัดข้อความเป็นชุดตามรูปแบบที่กำหนด
+        const splitRow = body.Message.match(/.{1,10}/g); // ตัดข้อความเป็นชุดตามรูปแบบที่กำหนด
         // const rejoinedText = splitRow ? splitRow.join('') : ''; // นำชุดของตัวอักษรกลับมาต่อกันเหมือนเดิม
         // const numberOfChunks = splitRow ? splitRow.length : 0; // จำนวนของชุดของตัวอักษร
         // const totalLength = rejoinedText.length; // ความยาวของข้อความที่นำชุดของตัวอักษรกลับมาต่อกันได้
@@ -155,4 +155,77 @@ const sentSms: RequestHandler = async (req, res) => {
     });
 };
 
-export { sentSms };
+//!Get User and admin By ID
+const getSmsByID: RequestHandler = async (req, res) => {
+
+    try {
+        const { SmsID } = req.query;
+        console.log('SmsID: ' + SmsID);
+        if(SmsID){
+            const ByID = await prisma.smsManagement.findUnique({
+                where: {
+                    SmsID: SmsID as string, // ระบุเงื่อนไขการค้นหาข้อมูลที่ต้องการด้วยฟิลด์ที่เป็น unique
+                },
+                include: {
+                    smsMessage: {
+                        select: {
+                            Message: true,
+                        },
+                    },
+                },
+            });
+            if (!ByID) {
+                return res.status(404).json({ error: 'SmsID not Sms' });
+            }
+            const combinedMessages = {
+                ...ByID,
+                combinedMessage: ByID.smsMessage.map((message) => message.Message).join(''),
+            };
+            return res.json(combinedMessages);
+        } else{
+            return res.status(404).json({ error: 'REQ.Params not found' });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+        await prisma.$disconnect();
+    }
+};
+
+//!Get all
+const getSmsWithMessages: RequestHandler = async (req, res) => {
+    try {
+        const smsManagement = await prisma.smsManagement.findMany({
+            orderBy: {
+                CreatedAt: 'asc',
+            },
+            include: {
+                smsMessage: {
+                    select: {
+                        Message: true,
+                    },
+                },
+            },
+        });
+
+        if (smsManagement.length === 0) {
+            return res.status(404).json({ smsManagement: 'No SMS found' });
+        }
+
+        // Combine messages with the same SmsID
+        const combinedMessages = smsManagement.map((sms) => {
+            const messages = sms.smsMessage.map((message) => message.Message).join('');
+            return { ...sms, combinedMessage: messages };
+        });
+
+        return res.json(combinedMessages);
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+        await prisma.$disconnect();
+    }
+};
+
+export { sentSms, getSmsByID, getSmsWithMessages };
