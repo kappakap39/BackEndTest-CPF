@@ -30,6 +30,30 @@ const getUserORAdmin: RequestHandler = async (req, res) => {
     }
 };
 
+//!Get User and admin By ID
+const getUserAdminByID: RequestHandler = async (req, res) => {
+    const prisma = new PrismaClient();
+    try {
+        const { IDInput } = req.params;
+        const ByID = await prisma.userManagement.findFirst({
+            where: {
+                IDUserOrAdmin: IDInput,
+            },
+        });
+
+        if (!ByID) {
+            return res.status(404).json({ error: 'userID not found' });
+        }
+
+        return res.json(ByID);
+    } catch (error) {
+        console.error('Error:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    } finally {
+        await prisma.$disconnect();
+    }
+};
+
 
 //!ADD Users
 const addUserOrAdmin: RequestHandler = async (req, res) => {
@@ -379,4 +403,4 @@ const updateUserOrAdmin: RequestHandler = async (req, res) => {
     });
 };
 
-export { getUserORAdmin, addUserOrAdmin, deleteUserOrAdmin, updateUserOrAdmin };
+export { getUserORAdmin, addUserOrAdmin, deleteUserOrAdmin, updateUserOrAdmin, getUserAdminByID };
