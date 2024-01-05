@@ -142,6 +142,8 @@ model Loggets {
   user User @relation(name: "loggets", fields: [UserID], references: [UserID])
 }
 
+//!-------------------PROJECT-SMS------------------------------------------------------------
+
 model UserManagement {
   IDUserOrAdmin        String    @id @default(uuid()) @db.Uuid
   //!Tab1
@@ -188,13 +190,17 @@ model UserManagement {
   CreatedAt            DateTime  @default(now())
   UpdatedAt            DateTime  @updatedAt
 
-  // smsManagement SmsManagement[] @relation("SmsManagements")
+  smsManagement SmsManagement[] @relation("SmsManagements")
+
+  tokenUser TokenUser[] @relation(name: "TokenUser")
+
+  loggetsUser LoggetsUser[] @relation(name: "LoggetsUser")
 }
 
 model SmsManagement {
   SmsID         String    @id @default(uuid()) @db.Uuid
-  // IDUserOrAdmin String    @db.Uuid
-  IDUserOrAdmin String?
+  IDUserOrAdmin String    @db.Uuid
+  // IDUserOrAdmin String?
   Sender        String?
   Tel           String?
   Result        String?
@@ -208,11 +214,11 @@ model SmsManagement {
 
   smsMessage SmsMessage[] @relation("Messages")
 
-  // userManagement UserManagement @relation(name: "SmsManagements", fields: [IDUserOrAdmin], references: [IDUserOrAdmin])
+  userManagement UserManagement @relation(name: "SmsManagements", fields: [IDUserOrAdmin], references: [IDUserOrAdmin])
 }
 
 model SmsMessage {
-  MessageID  String   @id @default(uuid()) @db.Uuid
+  MessageID String   @id @default(uuid()) @db.Uuid
   SmsID     String   @db.Uuid
   Message   String?  @db.VarChar(255)
   //!Standard
@@ -220,4 +226,25 @@ model SmsMessage {
   UpdatedAt DateTime @updatedAt
 
   smsManagement SmsManagement @relation(name: "Messages", fields: [SmsID], references: [SmsID])
+}
+
+model TokenUser {
+  TokenID        String         @id @default(uuid()) @db.Uuid
+  CreatedAt      DateTime       @default(now())
+  UpdatedAt      DateTime       @updatedAt
+  Expiration     DateTime
+  IDUserOrAdmin         String         @db.Uuid
+  TokenValue     String
+  userManagement UserManagement @relation(name: "TokenUser", fields: [IDUserOrAdmin], references: [IDUserOrAdmin])
+  // user User  @relation(name: "Token", fields: [UserID], references: [UserID], onDelete: Cascade)
+}
+
+model LoggetsUser {
+  LoggetID      String   @id @default(uuid()) @db.Uuid
+  CreatedAt     DateTime @default(now())
+  UpdatedAt     DateTime @updatedAt
+  IDUserOrAdmin String   @db.Uuid
+  TypeLogger    String
+
+  userManagement UserManagement @relation(name: "LoggetsUser", fields: [IDUserOrAdmin], references: [IDUserOrAdmin])
 }

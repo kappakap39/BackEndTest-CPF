@@ -197,6 +197,29 @@ CREATE TABLE "SmsMessage" (
     CONSTRAINT "SmsMessage_pkey" PRIMARY KEY ("MessageID")
 );
 
+-- CreateTable
+CREATE TABLE "TokenUser" (
+    "TokenID" UUID NOT NULL,
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+    "Expiration" TIMESTAMP(3) NOT NULL,
+    "IDUserOrAdmin" UUID NOT NULL,
+    "TokenValue" TEXT NOT NULL,
+
+    CONSTRAINT "TokenUser_pkey" PRIMARY KEY ("TokenID")
+);
+
+-- CreateTable
+CREATE TABLE "LoggetsUser" (
+    "LoggetID" UUID NOT NULL,
+    "CreatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "UpdatedAt" TIMESTAMP(3) NOT NULL,
+    "IDUserOrAdmin" UUID NOT NULL,
+    "TypeLogger" TEXT NOT NULL,
+
+    CONSTRAINT "LoggetsUser_pkey" PRIMARY KEY ("LoggetID")
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "People_Username_key" ON "People"("Username");
 
@@ -235,3 +258,9 @@ ALTER TABLE "SmsManagement" ADD CONSTRAINT "SmsManagement_IDUserOrAdmin_fkey" FO
 
 -- AddForeignKey
 ALTER TABLE "SmsMessage" ADD CONSTRAINT "SmsMessage_SmsID_fkey" FOREIGN KEY ("SmsID") REFERENCES "SmsManagement"("SmsID") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "TokenUser" ADD CONSTRAINT "TokenUser_IDUserOrAdmin_fkey" FOREIGN KEY ("IDUserOrAdmin") REFERENCES "UserManagement"("IDUserOrAdmin") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "LoggetsUser" ADD CONSTRAINT "LoggetsUser_IDUserOrAdmin_fkey" FOREIGN KEY ("IDUserOrAdmin") REFERENCES "UserManagement"("IDUserOrAdmin") ON DELETE RESTRICT ON UPDATE CASCADE;
